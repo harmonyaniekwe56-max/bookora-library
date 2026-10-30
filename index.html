@@ -21,46 +21,69 @@
     header {
       background: #7354a5;
       color: white;
-      padding: 25px;
-      text-align: center;
+      padding: 22px 7%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
     }
 
     header h1 {
-      font-size: 32px;
-      margin-bottom: 8px;
+      font-size: 28px;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin-left: 18px;
     }
 
     main {
-      max-width: 950px;
-      margin: 40px auto;
-      padding: 20px;
+      max-width: 1100px;
+      margin: auto;
+      padding: 35px 20px;
     }
 
-    .welcome {
+    .hero {
+      background: linear-gradient(120deg, #e8ddff, #fff0e8);
+      border-radius: 20px;
+      padding: 45px 30px;
+      text-align: center;
+    }
+
+    .hero h2 {
+      font-size: 34px;
+      margin-bottom: 12px;
+    }
+
+    .hero p {
+      margin-bottom: 22px;
+      line-height: 1.6;
+    }
+
+    .search {
+      width: min(100%, 450px);
+      padding: 14px;
+      border: 1px solid #cbbbe5;
+      border-radius: 25px;
+      font-size: 15px;
+    }
+
+    .section {
+      margin-top: 40px;
+    }
+
+    .section h2 {
+      margin-bottom: 18px;
+    }
+
+    .bookshelf {
       background: white;
       padding: 30px;
       border-radius: 16px;
       text-align: center;
-      box-shadow: 0 4px 15px #ddd4ed;
-    }
-
-    .welcome h2 {
-      margin-bottom: 12px;
-    }
-
-    .library {
-      margin-top: 35px;
-    }
-
-    .library h2 {
-      margin-bottom: 15px;
-    }
-
-    .empty {
-      background: white;
-      padding: 35px;
-      border-radius: 14px;
-      text-align: center;
+      box-shadow: 0 4px 15px #e5dcef;
     }
 
     footer {
@@ -68,31 +91,66 @@
       padding: 25px;
       color: #756b85;
     }
+
+    @media (max-width: 600px) {
+      header {
+        justify-content: center;
+        text-align: center;
+      }
+
+      nav a {
+        margin: 0 7px;
+      }
+
+      .hero h2 {
+        font-size: 27px;
+      }
+    }
   </style>
 </head>
 <body>
 
   <header>
-    <h1>📚 Bookora Library</h1>
-    <p>Every book has a home.</p>
+    <h1>📚 Bookora</h1>
+    <nav>
+      <a href="#">Home</a>
+      <a href="#library">My Library</a>
+      <a href="#discover">Discover</a>
+    </nav>
   </header>
 
   <main>
-    <section class="welcome">
-      <h2>Welcome to Bookora!</h2>
-      <p>Your personal space to discover, organise and enjoy books.</p>
+    <section class="hero">
+      <h2>Every book has a home.</h2>
+      <p>
+        Welcome to Bookora, your personal corner
+        for stories, adventures and imagination.
+      </p>
+      <input
+        class="search"
+        type="search"
+        placeholder="Search your books..."
+        aria-label="Search your books"
+      >
     </section>
 
-    <section class="library">
-      <h2>My Library</h2>
-      <div class="empty">
-        <p>📖 Your bookshelf is waiting for its first book!</p>
+    <section class="section" id="library">
+      <h2>📖 My Library</h2>
+      <div class="bookshelf">
+        <p>Your bookshelf is waiting for its first book!</p>
+      </div>
+    </section>
+
+    <section class="section" id="discover">
+      <h2>✨ Discover Books</h2>
+      <div class="bookshelf">
+        <p>Exciting discoveries are coming soon.</p>
       </div>
     </section>
   </main>
 
   <footer>
-    <p>Made with ❤️ for book lovers.</p>
+    <p>Bookora Library © 2026</p>
   </footer>
 
 </body>
