@@ -1,507 +1,669 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bookora Library</title>
-
-  <!-- EPUB reader library -->
-  <script src="https://cdn.jsdelivr.net/npm/epubjs/dist/epub.min.js"></script>
-
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: Georgia, serif;
-      background: #f8f5ff;
-      color: #302747;
-    }
-
-    header {
-      background: #7354a5;
-      color: white;
-      padding: 25px;
-      text-align: center;
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: 36px;
-    }
-
-    main {
-      max-width: 1000px;
-      margin: auto;
-      padding: 25px;
-    }
-
-    section {
-      background: white;
-      padding: 22px;
-      border-radius: 15px;
-      margin: 20px 0;
-      box-shadow: 0 3px 12px rgba(50, 30, 80, 0.06);
-    }
-
-    input, select {
-      display: block;
-      padding: 12px;
-      margin: 10px 0;
-      width: 100%;
-      border: 1px solid #cbbbe5;
-      border-radius: 8px;
-      font-family: inherit;
-    }
-
-    button {
-      background: #7354a5;
-      color: white;
-      border: 0;
-      padding: 12px 18px;
-      border-radius: 8px;
-      cursor: pointer;
-      margin: 5px 3px;
-    }
-
-    button:hover {
-      background: #593b88;
-    }
-
-    #books {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 18px;
-      margin-top: 20px;
-    }
-
-    .book {
-      background: #f4effc;
-      padding: 14px;
-      border-radius: 12px;
-      text-align: center;
-      overflow-wrap: anywhere;
-    }
-
-    .book img {
-      width: 100%;
-      height: 180px;
-      object-fit: cover;
-      border-radius: 7px;
-    }
-
-    .book button {
-      background: #a44d69;
-    }
-
-    .empty {
-      text-align: center;
-      padding: 25px;
-      color: #786b89;
-    }
-
-    #txtViewer {
-      display: none;
-      white-space: pre-wrap;
-      overflow-wrap: anywhere;
-      padding: 20px;
-      background: #f5f0e8;
-      border-radius: 12px;
-      font-family: Georgia, serif;
-      line-height: 1.7;
-    }
-
-    #pdfViewer {
-      display: none;
-      width: 100%;
-      height: 600px;
-      border: 1px solid #ddd;
-      border-radius: 12px;
-    }
-
-    #epubViewer {
-      width: 100%;
-      height: 600px;
-      background: #fffaf2;
-      border: 1px solid #eee;
-      border-radius: 12px;
-      overflow: hidden;
-    }
-
-    footer {
-      text-align: center;
-      padding: 25px;
-      color: #756b85;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Bookora Library — discover stories, read books and share your writing.">
+<title>Bookora Library</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --bg:#f8f5fc; --panel:#fff; --ink:#261b35; --muted:#766b83;
+  --purple:#7041a6; --deep:#432568; --line:#e8def1; --soft:#f0e8f8;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif}
+body.dark{--bg:#17121f;--panel:#241b30;--ink:#f5effb;--muted:#c1b4cf;--line:#443451;--soft:#332540}
+header{background:linear-gradient(120deg,#382052,#7950a8);color:white;padding:20px 5%;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.brand{font:700 30px 'Playfair Display',serif}
+.brand span{color:#e8d7ff}
+nav{display:flex;gap:8px;flex-wrap:wrap}
+nav button{border:1px solid #ffffff50;background:#ffffff14;color:white;border-radius:20px;padding:9px 13px;cursor:pointer}
+main{max-width:1150px;margin:28px auto;padding:0 18px}
+.hero{background:linear-gradient(120deg,#eee2fa,#faf6ff);border-radius:24px;padding:34px;margin-bottom:24px;color:#261b35}
+.hero h1{font:700 clamp(30px,5vw,48px) 'Playfair Display';margin:0 0 12px}
+.hero p{color:#62546f;line-height:1.7}
+h2{font:700 26px 'Playfair Display';margin:8px 0 16px}
+.section{display:none}.section.active{display:block}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px}
+.book{background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column}
+.cover{height:180px;background:linear-gradient(135deg,#e8d8f7,#b99ad8);display:grid;place-items:center;color:#553576;font:700 22px 'Playfair Display';text-align:center;padding:15px}
+.cover img{width:100%;height:100%;object-fit:cover}
+.bookbody{padding:14px;display:flex;flex-direction:column;gap:8px;flex:1}
+.bookbody h3{margin:0;font:700 18px 'Playfair Display'}
+.muted{color:var(--muted);font-size:13px}
+.bookbody p{font-size:14px;line-height:1.5;margin:0}
+.actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:auto;padding-top:8px}
+button,.btn{background:var(--purple);color:white;border:0;border-radius:10px;padding:10px 14px;cursor:pointer;font:600 14px 'DM Sans'}
+button:hover,.btn:hover{background:var(--deep)}
+button.secondary{background:var(--soft);color:var(--deep)}
+input,select,textarea{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--ink);font:inherit;margin:5px 0 12px}
+textarea{min-height:90px;resize:vertical}
+label{font-size:14px;font-weight:600}
+.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.full{grid-column:1/-1}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.row>*{flex:1}
+.notice{padding:12px 14px;background:var(--soft);border-radius:10px;color:var(--deep);font-size:14px;margin:10px 0}
+.reader{background:#fff;color:#222;border-radius:12px;padding:12px;min-height:280px;overflow:auto}
+.reader iframe{width:100%;height:70vh;border:0}
+.reader pre{white-space:pre-wrap;line-height:1.7}
+.tag{background:var(--soft);color:var(--deep);border-radius:30px;padding:4px 9px;font-size:12px;display:inline-block}
+.hidden{display:none!important}
+footer{text-align:center;color:var(--muted);padding:30px 15px;font-size:13px}
+@media(max-width:700px){.hero{padding:24px}.formgrid{grid-template-columns:1fr}.full{grid-column:auto}.brand{font-size:25px}}
+</style>
 </head>
 
 <body>
-
 <header>
-  <h1>📚 Bookora</h1>
-  <p>Every book has a home.</p>
+  <div class="brand">Bookora <span>Library</span></div>
+  <nav>
+    <button onclick="showSection('discover')">Discover</button>
+    <button onclick="showSection('shelf')">My Bookshelf</button>
+    <button onclick="showSection('submit')">Submit a Book</button>
+    <button onclick="showSection('account')">Account</button>
+    <button onclick="showSection('dashboard')">Author Area</button>
+    <button onclick="toggleTheme()">◐</button>
+  </nav>
 </header>
 
 <main>
+<section class="hero">
+  <h1>Every story opens a door.</h1>
+  <p>Discover new worlds, keep your favourite reads together, and share stories of your own. Welcome to Bookora.</p>
+  <button onclick="showSection('discover')">Explore the library</button>
+</section>
 
-  <section>
-    <h2>Welcome to Bookora!</h2>
-    <p>Your personal space for stories and adventures.</p>
-  </section>
-
-  <!-- ADD A BOOK -->
-  <section>
-    <h2>➕ Add a Book</h2>
-
-    <form id="bookForm">
-      <input id="title" placeholder="Book title" required>
-
-      <input id="author" placeholder="Author's name" required>
-
-      <select id="genre" required>
-        <option value="">Choose a genre</option>
-        <option>Fantasy</option>
-        <option>Romance</option>
-        <option>Mystery</option>
-        <option>Adventure</option>
-        <option>Science Fiction</option>
-        <option>Horror</option>
-        <option>Biography</option>
-        <option>Other</option>
+<section id="discover" class="section active">
+  <h2>Discover Books</h2>
+  <div class="panel">
+    <div class="row">
+      <input id="search" placeholder="Search title or author" oninput="renderBooks()">
+      <select id="genreFilter" onchange="renderBooks()">
+        <option value="">All genres</option>
       </select>
+      <select id="sortFilter" onchange="renderBooks()">
+        <option value="new">Newest first</option>
+        <option value="az">Title A–Z</option>
+      </select>
+    </div>
+    <div class="notice" id="modeNotice">Demo library is active. Configure Supabase to enable shared publishing.</div>
+  </div>
+  <div id="bookGrid" class="grid"></div>
+</section>
 
-      <input
-        id="cover"
-        type="url"
-        placeholder="Book cover image link (optional)"
-      >
+<section id="shelf" class="section">
+  <h2>My Bookshelf</h2>
+  <div class="panel">
+    <div id="shelfGrid" class="grid"></div>
+  </div>
+  <h2>Favourites</h2>
+  <div id="favGrid" class="grid"></div>
+</section>
 
-      <button type="submit">Add to My Library</button>
+<section id="submit" class="section">
+  <h2>Submit Your Book</h2>
+  <div class="panel">
+    <div class="notice">In demo mode, submissions are saved only in this browser. In shared mode, they go to the library for moderator review. Only submit writing you own or have permission to share.</div>
+    <form id="bookForm" class="formgrid">
+      <div>
+        <label for="bookTitle">Book title</label>
+        <input id="bookTitle" required maxlength="120">
+      </div>
+      <div>
+        <label for="penName">Author / pen name</label>
+        <input id="penName" required maxlength="80">
+      </div>
+      <div>
+        <label for="bookGenre">Genre</label>
+        <select id="bookGenre" required></select>
+      </div>
+      <div>
+        <label for="bookCover">Cover image (optional)</label>
+        <input id="bookCover" type="file" accept="image/png,image/jpeg,image/webp">
+      </div>
+      <div class="full">
+        <label for="bookDescription">Description</label>
+        <textarea id="bookDescription" maxlength="1500" required></textarea>
+      </div>
+      <div class="full">
+        <label for="bookFile">Book file (PDF, TXT or EPUB; max 10 MB)</label>
+        <input id="bookFile" type="file" accept=".pdf,.txt,.epub,application/pdf,text/plain,application/epub+zip" required>
+      </div>
+      <div class="full"><button type="submit">Send for Review</button></div>
     </form>
-  </section>
+    <p id="submitMessage" role="status"></p>
+  </div>
+</section>
 
-  <!-- BOOKSHELF -->
-  <section>
-    <h2>📖 My Bookshelf</h2>
-
-    <input
-      id="searchBooks"
-      type="search"
-      placeholder="Search by title or author..."
-    >
-
-    <div id="books">
-      <p class="empty">Your bookshelf is waiting for its first book!</p>
+<section id="account" class="section">
+  <h2>Account</h2>
+  <div class="panel">
+    <div id="signedOut">
+      <h3>Create an account</h3>
+      <label>Email</label>
+      <input id="email" type="email" autocomplete="email">
+      <label>Password (at least 8 characters)</label>
+      <input id="password" type="password" autocomplete="new-password">
+      <label>Pen name</label>
+      <input id="accountPenName" maxlength="80">
+      <div class="row">
+        <button onclick="signUp()">Sign Up</button>
+        <button class="secondary" onclick="signIn()">Log In</button>
+      </div>
     </div>
-  </section>
-
-  <!-- PDF READER -->
-  <section>
-    <h2>📕 Read PDF Books</h2>
-    <p>Select a PDF book from your device.</p>
-
-    <input
-      type="file"
-      id="pdfUpload"
-      accept=".pdf,application/pdf"
-    >
-
-    <iframe
-      id="pdfViewer"
-      title="PDF book reader"
-    ></iframe>
-  </section>
-
-  <!-- TXT READER -->
-  <section>
-    <h2>📝 Read TXT Books</h2>
-    <p>Select a text book from your device.</p>
-
-    <input
-      type="file"
-      id="txtUpload"
-      accept=".txt,text/plain"
-    >
-
-    <pre id="txtViewer"></pre>
-  </section>
-
-  <!-- EPUB READER -->
-  <section>
-    <h2>📚 Read EPUB Books</h2>
-    <p>Select an EPUB book from your device.</p>
-
-    <input
-      type="file"
-      id="epubUpload"
-      accept=".epub"
-    >
-
-    <div id="epubViewer"></div>
-
-    <div>
-      <button type="button" id="previousPage">Previous</button>
-      <button type="button" id="nextPage">Next</button>
+    <div id="signedIn" class="hidden">
+      <p id="userLabel"></p>
+      <button onclick="signOut()">Log Out</button>
     </div>
+    <div class="notice">Shared accounts require your own Supabase project. Never put a secret/service-role key in this website.</div>
+  </div>
+</section>
 
-    <p id="epubStatus">No EPUB book selected.</p>
-  </section>
+<section id="dashboard" class="section">
+  <h2>Author Area</h2>
+  <div class="panel">
+    <p class="muted">Your local submissions appear here in demo mode.</p>
+    <div id="authorSubmissions"></div>
+  </div>
+  <div id="adminPanel" class="panel hidden">
+    <h3>Pending submissions (admin)</h3>
+    <div id="pendingBooks"></div>
+  </div>
+</section>
 
+<section id="readerSection" class="section">
+  <h2 id="readerTitle">Book Reader</h2>
+  <div class="panel">
+    <button class="secondary" onclick="closeReader()">Close Reader</button>
+    <div id="readerContent" class="reader">Choose a book to read.</div>
+  </div>
+</section>
 </main>
 
-<footer>
-  Bookora Library © 2026
-</footer>
+<footer>Bookora Library · Read widely. Write boldly. Share responsibly.</footer>
 
 <script>
-  // ------------------------------
-  // BOOKSHELF
-  // ------------------------------
+/*
+  BOOKORA CONFIGURATION
 
-  const form = document.getElementById("bookForm");
-  const booksArea = document.getElementById("books");
-  const searchBooks = document.getElementById("searchBooks");
+  Leave these blank for Version 1 (local demo).
 
-  let books = [];
+  For Version 2, add your Supabase project URL and
+  publishable/anon key. Never use the service_role key.
+*/
+const SUPABASE_URL = "";
+const SUPABASE_PUBLISHABLE_KEY = "";
 
-  try {
-    books = JSON.parse(
-      localStorage.getItem("bookora-books") || "[]"
-    );
+const supa = (SUPABASE_URL && SUPABASE_PUBLISHABLE_KEY && window.supabase)
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY)
+  : null;
 
-    if (!Array.isArray(books)) {
-      books = [];
-    }
-  } catch (error) {
-    books = [];
+const GENRES = [
+  "Fantasy","Romance","Mystery","Thriller","Adventure",
+  "Science Fiction","Historical Fiction","Poetry","Drama",
+  "Comedy","Non-Fiction","Young Adult","Children"
+];
+
+const samples = [
+  {id:"sample-1",title:"The Hidden Kingdom",pen_name:"Bookora Stories",genre:"Fantasy",description:"A mysterious map leads a young explorer towards a kingdom hidden from ordinary eyes.",demo:true},
+  {id:"sample-2",title:"Letters in the Rain",pen_name:"Bookora Stories",genre:"Romance",description:"Two classmates discover that a series of letters can change an ordinary school year.",demo:true},
+  {id:"sample-3",title:"The Missing Diary",pen_name:"Bookora Stories",genre:"Mystery",description:"A missing diary leaves clues that bring an old secret to light.",demo:true},
+  {id:"sample-4",title:"Beyond the Stars",pen_name:"Bookora Stories",genre:"Science Fiction",description:"A curious crew sets out to explore an unusual signal beyond their world.",demo:true},
+  {id:"sample-5",title:"The Forgotten Map",pen_name:"Bookora Stories",genre:"Adventure",description:"An old map sends three friends on a surprising journey.",demo:true}
+];
+
+let books = [...samples];
+let currentUser = null;
+
+function getLocal(key,fallback=[]) {
+  try { return JSON.parse(localStorage.getItem(key)) || fallback; }
+  catch { return fallback; }
+}
+function setLocal(key,value) {
+  localStorage.setItem(key,JSON.stringify(value));
+}
+
+function showSection(id) {
+  document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  if(id==="shelf") renderShelf();
+  if(id==="dashboard") renderDashboard();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function toggleTheme() {
+  document.body.classList.toggle("dark");
+  localStorage.setItem("bookora-dark",document.body.classList.contains("dark")?"1":"0");
+}
+if(localStorage.getItem("bookora-dark")==="1") document.body.classList.add("dark");
+
+function fillGenres() {
+  const options=GENRES.map(g=>`<option value="${g}">${g}</option>`).join("");
+  document.getElementById("genreFilter").insertAdjacentHTML("beforeend",options);
+  document.getElementById("bookGenre").insertAdjacentHTML("beforeend",'<option value="">Choose a genre</option>'+options);
+}
+
+function makeBookCard(book) {
+  const card=document.createElement("article");
+  card.className="book";
+
+  const cover=document.createElement("div");
+  cover.className="cover";
+  if(book.cover_url) {
+    const img=document.createElement("img");
+    img.src=book.cover_url;
+    img.alt="Cover of "+book.title;
+    cover.append(img);
+  } else {
+    cover.textContent="📖 "+book.title;
   }
 
-  function saveBooks() {
-    localStorage.setItem(
-      "bookora-books",
-      JSON.stringify(books)
-    );
+  const body=document.createElement("div");
+  body.className="bookbody";
+
+  const title=document.createElement("h3");
+  title.textContent=book.title;
+
+  const author=document.createElement("div");
+  author.className="muted";
+  author.textContent="By "+(book.pen_name||"Unknown author");
+
+  const genre=document.createElement("span");
+  genre.className="tag";
+  genre.textContent=book.genre||"Uncategorised";
+
+  const desc=document.createElement("p");
+  desc.textContent=book.description||"";
+
+  const actions=document.createElement("div");
+  actions.className="actions";
+
+  const save=document.createElement("button");
+  save.className="secondary";
+  save.textContent="Add to Shelf";
+  save.onclick=()=>saveBook(book.id);
+
+  const fav=document.createElement("button");
+  fav.className="secondary";
+  fav.textContent="♡ Favourite";
+  fav.onclick=()=>toggleFavourite(book.id);
+
+  const read=document.createElement("button");
+  read.textContent="Read Details";
+  read.onclick=()=>openBook(book.id);
+
+  actions.append(save,fav,read);
+  body.append(title,author,genre,desc,actions);
+  card.append(cover,body);
+  return card;
+}
+
+function renderBooks() {
+  const grid=document.getElementById("bookGrid");
+  grid.replaceChildren();
+
+  const q=document.getElementById("search").value.toLowerCase();
+  const genre=document.getElementById("genreFilter").value;
+  const sort=document.getElementById("sortFilter").value;
+
+  let list=books.filter(b=>
+    (!q||(b.title+" "+(b.pen_name||"")).toLowerCase().includes(q)) &&
+    (!genre||b.genre===genre)
+  );
+
+  if(sort==="az") list.sort((a,b)=>a.title.localeCompare(b.title));
+
+  if(!list.length) {
+    grid.textContent="No books match your search yet.";
+    return;
+  }
+  list.forEach(b=>grid.append(makeBookCard(b)));
+}
+
+function saveBook(id) {
+  let ids=getLocal("bookora-shelf");
+  if(!ids.includes(id)) ids.push(id);
+  setLocal("bookora-shelf",ids);
+  alert("Saved to your bookshelf on this browser.");
+}
+
+function toggleFavourite(id) {
+  let ids=getLocal("bookora-favourites");
+  ids=ids.includes(id)?ids.filter(x=>x!==id):[...ids,id];
+  setLocal("bookora-favourites",ids);
+  renderShelf();
+}
+
+function renderShelf() {
+  const shelf=document.getElementById("shelfGrid");
+  const fav=document.getElementById("favGrid");
+  shelf.replaceChildren();
+  fav.replaceChildren();
+
+  const ids=getLocal("bookora-shelf");
+  const favIds=getLocal("bookora-favourites");
+
+  books.filter(b=>ids.includes(b.id)).forEach(b=>shelf.append(makeBookCard(b)));
+  books.filter(b=>favIds.includes(b.id)).forEach(b=>fav.append(makeBookCard(b)));
+
+  if(!shelf.children.length) shelf.textContent="Your bookshelf is empty.";
+  if(!fav.children.length) fav.textContent="No favourites saved yet.";
+}
+
+function openBook(id) {
+  const book=books.find(b=>String(b.id)===String(id));
+  if(!book) return;
+
+  document.getElementById("readerTitle").textContent=book.title;
+  const area=document.getElementById("readerContent");
+  area.replaceChildren();
+
+  const p=document.createElement("p");
+  p.textContent=book.description||"No description provided.";
+  area.append(p);
+
+  const note=document.createElement("p");
+  note.textContent=book.demo
+    ? "This is a demonstration catalogue entry. No full book file is attached."
+    : "This book has been published in the shared library.";
+  area.append(note);
+
+  if(supa && !book.demo && book.file_path) readSharedBook(book);
+  showSection("readerSection");
+}
+
+async function readSharedBook(book) {
+  const {data,error}=await supa.storage.from("bookora-files").createSignedUrl(book.file_path,3600);
+  if(error) {
+    document.getElementById("readerContent").textContent="Could not open book: "+error.message;
+    return;
   }
 
-  function renderBooks() {
-    booksArea.innerHTML = "";
+  const url=data.signedUrl;
+  const area=document.getElementById("readerContent");
+  area.replaceChildren();
 
-    const search = searchBooks.value.toLowerCase().trim();
+  const name=(book.file_name||"").toLowerCase();
 
-    const filteredBooks = books
-      .map((book, index) => ({ ...book, index }))
-      .filter(book =>
-        (book.title || "").toLowerCase().includes(search) ||
-        (book.author || "").toLowerCase().includes(search)
-      );
+  if(name.endsWith(".pdf")) {
+    const frame=document.createElement("iframe");
+    frame.src=url;
+    frame.title="PDF reader";
+    area.append(frame);
+  } else if(name.endsWith(".txt")) {
+    const pre=document.createElement("pre");
+    const response=await fetch(url);
+    pre.textContent=await response.text();
+    area.append(pre);
+  } else {
+    const link=document.createElement("a");
+    link.href=url;
+    link.textContent="Open or download EPUB";
+    link.target="_blank";
+    link.rel="noopener";
+    area.append(link);
+  }
+}
 
-    if (filteredBooks.length === 0) {
-      booksArea.innerHTML =
-        '<p class="empty">No matching books found.</p>';
-      return;
-    }
+function closeReader() {
+  showSection("discover");
+}
 
-    filteredBooks.forEach(book => {
-      const card = document.createElement("div");
-      card.className = "book";
+document.getElementById("bookForm").addEventListener("submit",async event=>{
+  event.preventDefault();
+  const message=document.getElementById("submitMessage");
+  message.textContent="";
 
-      if (book.cover) {
-        const img = document.createElement("img");
-        img.src = book.cover;
-        img.alt = "Cover of " + book.title;
-        img.onerror = () => img.remove();
-        card.appendChild(img);
-      }
+  const file=document.getElementById("bookFile").files[0];
+  const cover=document.getElementById("bookCover").files[0];
 
-      const title = document.createElement("h3");
-      title.textContent = book.title || "Untitled";
+  if(!file) { message.textContent="Choose a book file."; return; }
+  if(file.size>10*1024*1024) { message.textContent="The book file must be 10 MB or smaller."; return; }
 
-      const author = document.createElement("p");
-      author.textContent = "By " + (book.author || "Unknown");
-
-      const genre = document.createElement("p");
-      genre.textContent = book.genre || "Uncategorised";
-
-      const remove = document.createElement("button");
-      remove.textContent = "Remove";
-
-      remove.addEventListener("click", () => {
-        books.splice(book.index, 1);
-        saveBooks();
-        renderBooks();
-      });
-
-      card.append(title, author, genre, remove);
-      booksArea.appendChild(card);
-    });
+  const extension=file.name.split(".").pop().toLowerCase();
+  if(!["pdf","txt","epub"].includes(extension)) {
+    message.textContent="Choose a PDF, TXT or EPUB file.";
+    return;
   }
 
-  form.addEventListener("submit", event => {
-    event.preventDefault();
+  if(cover && (!["image/jpeg","image/png","image/webp"].includes(cover.type)||cover.size>2*1024*1024)) {
+    message.textContent="Cover must be JPG, PNG or WEBP and no larger than 2 MB.";
+    return;
+  }
 
-    books.push({
-      title: document.getElementById("title").value.trim(),
-      author: document.getElementById("author").value.trim(),
-      genre: document.getElementById("genre").value,
-      cover: document.getElementById("cover").value.trim()
-    });
+  const record={
+    id:"local-"+Date.now(),
+    title:document.getElementById("bookTitle").value.trim(),
+    pen_name:document.getElementById("penName").value.trim(),
+    genre:document.getElementById("bookGenre").value,
+    description:document.getElementById("bookDescription").value.trim(),
+    file_name:file.name,
+    created_at:new Date().toISOString(),
+    status:"pending"
+  };
 
-    saveBooks();
-    renderBooks();
-    form.reset();
-  });
-
-  searchBooks.addEventListener("input", renderBooks);
-
-  renderBooks();
-
-
-  // ------------------------------
-  // PDF READER
-  // ------------------------------
-
-  const pdfUpload = document.getElementById("pdfUpload");
-  const pdfViewer = document.getElementById("pdfViewer");
-
-  let currentPDF = null;
-
-  pdfUpload.addEventListener("change", function() {
-    const file = this.files[0];
-
-    if (!file) return;
-
-    if (file.type !== "application/pdf") {
-      alert("Please select a PDF file.");
-      return;
-    }
-
-    if (currentPDF) {
-      URL.revokeObjectURL(currentPDF);
-    }
-
-    currentPDF = URL.createObjectURL(file);
-    pdfViewer.src = currentPDF;
-    pdfViewer.style.display = "block";
-  });
-
-
-  // ------------------------------
-  // TXT READER
-  // ------------------------------
-
-  const txtUpload = document.getElementById("txtUpload");
-  const txtViewer = document.getElementById("txtViewer");
-
-  txtUpload.addEventListener("change", function() {
-    const file = this.files[0];
-
-    if (!file) return;
-
-    if (!file.name.toLowerCase().endsWith(".txt")) {
-      alert("Please select a TXT file.");
-      return;
-    }
-
-    const reader = new FileReader();
-
-    reader.onload = function(event) {
-      txtViewer.textContent = event.target.result;
-      txtViewer.style.display = "block";
-    };
-
-    reader.onerror = function() {
-      alert("Could not read this text file.");
-    };
-
-    reader.readAsText(file);
-  });
-
-
-  // ------------------------------
-  // EPUB READER
-  // ------------------------------
-
-  const epubUpload = document.getElementById("epubUpload");
-  const epubViewer = document.getElementById("epubViewer");
-  const epubStatus = document.getElementById("epubStatus");
-  const previousPage = document.getElementById("previousPage");
-  const nextPage = document.getElementById("nextPage");
-
-  let currentEpub = null;
-  let currentRendition = null;
-  let currentEpubURL = null;
-
-  epubUpload.addEventListener("change", async function() {
-    const file = this.files[0];
-
-    if (!file) return;
-
-    if (!file.name.toLowerCase().endsWith(".epub")) {
-      alert("Please select an EPUB file.");
-      return;
-    }
-
-    if (typeof ePub !== "function") {
-      alert("The EPUB reader library could not load. Check your internet connection.");
+  if(supa) {
+    if(!currentUser) {
+      message.textContent="Please log in before submitting a book.";
       return;
     }
 
     try {
-      if (currentEpub) {
-        currentEpub.destroy();
+      let coverUrl=null;
+
+      if(cover) {
+        const coverPath=`${currentUser.id}/${crypto.randomUUID()}.${cover.name.split(".").pop().toLowerCase()}`;
+        const coverUpload=await supa.storage.from("bookora-covers").upload(coverPath,cover);
+        if(coverUpload.error) throw coverUpload.error;
+        coverUrl=supa.storage.from("bookora-covers").getPublicUrl(coverPath).data.publicUrl;
       }
 
-      if (currentEpubURL) {
-        URL.revokeObjectURL(currentEpubURL);
-      }
+      const filePath=`${currentUser.id}/${crypto.randomUUID()}.${extension}`;
+      const upload=await supa.storage.from("bookora-files").upload(filePath,file);
+      if(upload.error) throw upload.error;
 
-      epubViewer.innerHTML = "";
-      epubStatus.textContent = "Opening your book...";
-
-      currentEpubURL = URL.createObjectURL(file);
-      currentEpub = ePub(currentEpubURL);
-
-      currentRendition = currentEpub.renderTo(epubViewer, {
-        width: "100%",
-        height: "600px"
+      const {error}=await supa.from("books").insert({
+        author_id:currentUser.id,
+        title:record.title,
+        pen_name:record.pen_name,
+        genre:record.genre,
+        description:record.description,
+        cover_url:coverUrl,
+        file_path:filePath,
+        file_name:file.name,
+        status:"pending"
       });
+      if(error) throw error;
 
-      await currentRendition.display();
-
-      epubStatus.textContent = "Your EPUB book is ready!";
-    } catch (error) {
-      epubStatus.textContent = "Could not open this EPUB book.";
-      console.error(error);
+      message.textContent="Submitted! Your book is waiting for moderator review.";
+    } catch(error) {
+      message.textContent="Submission failed: "+error.message;
     }
+  } else {
+    if(cover) record.cover_url=URL.createObjectURL(cover);
+    let submissions=getLocal("bookora-submissions");
+    submissions.push(record);
+    setLocal("bookora-submissions",submissions);
+
+    let localBooks=getLocal("bookora-local-books");
+    localBooks.push(record);
+    setLocal("bookora-local-books",localBooks);
+
+    message.textContent="Saved on this browser only. Other visitors cannot see it.";
+  }
+
+  event.target.reset();
+  renderDashboard();
+});
+
+function renderDashboard() {
+  const box=document.getElementById("authorSubmissions");
+  box.replaceChildren();
+
+  const submissions=getLocal("bookora-submissions");
+  if(!submissions.length) {
+    box.textContent="No local submissions yet.";
+    return;
+  }
+
+  submissions.forEach((book,index)=>{
+    const row=document.createElement("p");
+    row.textContent=`${book.title} — ${book.pen_name} (${book.status})`;
+
+    const remove=document.createElement("button");
+    remove.className="secondary";
+    remove.textContent="Remove";
+    remove.onclick=()=>{
+      const list=getLocal("bookora-submissions");
+      list.splice(index,1);
+      setLocal("bookora-submissions",list);
+      renderDashboard();
+    };
+
+    box.append(row,remove);
+  });
+}
+
+async function signUp() {
+  if(!supa) {
+    alert("Shared accounts are not enabled. Add your Supabase settings in the code first.");
+    return;
+  }
+
+  const email=document.getElementById("email").value;
+  const password=document.getElementById("password").value;
+  const penName=document.getElementById("accountPenName").value;
+
+  if(password.length<8) {
+    alert("Use a password with at least 8 characters.");
+    return;
+  }
+
+  const {error}=await supa.auth.signUp({
+    email,password,
+    options:{data:{pen_name:penName}}
   });
 
-  previousPage.addEventListener("click", function() {
-    if (currentRendition) {
-      currentRendition.prev();
-    }
+  alert(error?error.message:"Account created. Check your email if confirmation is enabled.");
+}
+
+async function signIn() {
+  if(!supa) {
+    alert("Shared accounts are not enabled in demo mode.");
+    return;
+  }
+
+  const {data,error}=await supa.auth.signInWithPassword({
+    email:document.getElementById("email").value,
+    password:document.getElementById("password").value
   });
 
-  nextPage.addEventListener("click", function() {
-    if (currentRendition) {
-      currentRendition.next();
-    }
+  if(error) { alert(error.message); return; }
+  currentUser=data.user;
+  updateAuthUI();
+  await loadSharedBooks();
+}
+
+async function signOut() {
+  if(supa) await supa.auth.signOut();
+  currentUser=null;
+  updateAuthUI();
+}
+
+function updateAuthUI() {
+  document.getElementById("signedOut").classList.toggle("hidden",!!currentUser);
+  document.getElementById("signedIn").classList.toggle("hidden",!currentUser);
+  document.getElementById("userLabel").textContent=currentUser
+    ? "Signed in as "+currentUser.email : "";
+
+  if(currentUser) loadPendingBooks();
+}
+
+async function loadSharedBooks() {
+  if(!supa) return;
+
+  const {data,error}=await supa.from("books")
+    .select("id,title,pen_name,genre,description,cover_url,file_path,file_name,created_at")
+    .eq("status","approved")
+    .order("created_at",{ascending:false});
+
+  if(error) {
+    console.error(error);
+    return;
+  }
+
+  books=[...samples,...(data||[])];
+  renderBooks();
+}
+
+async function loadPendingBooks() {
+  if(!supa||!currentUser) return;
+
+  const {data:admin}=await supa.from("bookora_admins")
+    .select("user_id")
+    .eq("user_id",currentUser.id)
+    .maybeSingle();
+
+  const panel=document.getElementById("adminPanel");
+  panel.classList.toggle("hidden",!admin);
+  if(!admin) return;
+
+  const {data,error}=await supa.from("books")
+    .select("id,title,pen_name,genre")
+    .eq("status","pending");
+
+  const box=document.getElementById("pendingBooks");
+  box.replaceChildren();
+
+  if(error) { box.textContent=error.message; return; }
+  if(!data?.length) { box.textContent="No pending books."; return; }
+
+  data.forEach(book=>{
+    const row=document.createElement("p");
+    row.textContent=`${book.title} — ${book.pen_name} (${book.genre}) `;
+
+    ["approved","rejected"].forEach(status=>{
+      const button=document.createElement("button");
+      button.className="secondary";
+      button.textContent=status;
+      button.onclick=()=>moderateBook(book.id,status);
+      row.append(button);
+    });
+
+    box.append(row);
+  });
+}
+
+async function moderateBook(id,status) {
+  const {error}=await supa.from("books").update({status}).eq("id",id);
+  alert(error?error.message:"Book status updated.");
+  await loadPendingBooks();
+  await loadSharedBooks();
+}
+
+if(supa) {
+  supa.auth.getUser().then(({data})=>{
+    currentUser=data.user;
+    updateAuthUI();
+    loadSharedBooks();
   });
 
-  window.addEventListener("beforeunload", function() {
-    if (currentPDF) {
-      URL.revokeObjectURL(currentPDF);
-    }
-
-    if (currentEpubURL) {
-      URL.revokeObjectURL(currentEpubURL);
-    }
+  supa.auth.onAuthStateChange((_event,session)=>{
+    currentUser=session?.user||null;
+    updateAuthUI();
   });
 
+  document.getElementById("modeNotice").textContent=
+    "Shared mode is configured. Approved community books load from the database.";
+}
+
+fillGenres();
+renderBooks();
+renderDashboard();
 </script>
-
 </body>
 </html>
