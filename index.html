@@ -195,8 +195,9 @@ footer{text-align:center;color:var(--muted);padding:30px 15px;font-size:13px}
   For Version 2, add your Supabase project URL and
   publishable/anon key. Never use the service_role key.
 */
-https://xugpbjsngmverarcwqpc.supabase.co
-sb_publishable_EHEFt4QNfvDIuJ54_YvksQ_dDWnOPoi
+  const SUPABASE_URL = "https://xugpbjsngmverarcwqpc.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "YOUR_PUBLISHABLE_KEY";
+
 const supa = (SUPABASE_URL && SUPABASE_PUBLISHABLE_KEY && window.supabase)
   ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY)
   : null;
