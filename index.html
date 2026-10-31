@@ -2,15 +2,23 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Bookora Library — discover stories, read books and share your writing.">
 <title>Bookora Library</title>
+
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 :root {
-  --bg:#f8f5fc; --panel:#fff; --ink:#261b35; --muted:#766b83;
-  --purple:#7041a6; --deep:#432568; --line:#e8def1; --soft:#f0e8f8;
+  --bg:#f8f5fc;
+  --panel:#fff;
+  --ink:#261b35;
+  --muted:#766b83;
+  --purple:#7041a6;
+  --deep:#432568;
+  --line:#e8def1;
+  --soft:#f0e8f8;
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif}
@@ -25,7 +33,8 @@ main{max-width:1150px;margin:28px auto;padding:0 18px}
 .hero h1{font:700 clamp(30px,5vw,48px) 'Playfair Display';margin:0 0 12px}
 .hero p{color:#62546f;line-height:1.7}
 h2{font:700 26px 'Playfair Display';margin:8px 0 16px}
-.section{display:none}.section.active{display:block}
+.section{display:none}
+.section.active{display:block}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:20px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px}
 .book{background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column}
@@ -53,7 +62,12 @@ label{font-size:14px;font-weight:600}
 .tag{background:var(--soft);color:var(--deep);border-radius:30px;padding:4px 9px;font-size:12px;display:inline-block}
 .hidden{display:none!important}
 footer{text-align:center;color:var(--muted);padding:30px 15px;font-size:13px}
-@media(max-width:700px){.hero{padding:24px}.formgrid{grid-template-columns:1fr}.full{grid-column:auto}.brand{font-size:25px}}
+@media(max-width:700px){
+  .hero{padding:24px}
+  .formgrid{grid-template-columns:1fr}
+  .full{grid-column:auto}
+  .brand{font-size:25px}
+}
 </style>
 </head>
 
@@ -108,6 +122,7 @@ footer{text-align:center;color:var(--muted);padding:30px 15px;font-size:13px}
   <h2>Submit Your Book</h2>
   <div class="panel">
     <div class="notice">In demo mode, submissions are saved only in this browser. In shared mode, they go to the library for moderator review. Only submit writing you own or have permission to share.</div>
+
     <form id="bookForm" class="formgrid">
       <div>
         <label for="bookTitle">Book title</label>
@@ -133,7 +148,9 @@ footer{text-align:center;color:var(--muted);padding:30px 15px;font-size:13px}
         <label for="bookFile">Book file (PDF, TXT or EPUB; max 10 MB)</label>
         <input id="bookFile" type="file" accept=".pdf,.txt,.epub,application/pdf,text/plain,application/epub+zip" required>
       </div>
-      <div class="full"><button type="submit">Send for Review</button></div>
+      <div class="full">
+        <button type="submit">Send for Review</button>
+      </div>
     </form>
     <p id="submitMessage" role="status"></p>
   </div>
@@ -150,17 +167,18 @@ footer{text-align:center;color:var(--muted);padding:30px 15px;font-size:13px}
       <input id="password" type="password" autocomplete="new-password">
       <label>Pen name</label>
       <input id="accountPenName" maxlength="80">
-      
-<div class="row">
-  <button onclick="signUp()">Sign Up</button>
-  <button class="secondary" onclick="signIn()">Log In</button>
-</div>
 
+      <div class="row">
+        <button type="button" onclick="signUp()">Sign Up</button>
+        <button type="button" class="secondary" onclick="signIn()">Log In</button>
+      </div>
     </div>
+
     <div id="signedIn" class="hidden">
       <p id="userLabel"></p>
       <button onclick="signOut()">Log Out</button>
     </div>
+
     <div class="notice">Shared accounts require your own Supabase project. Never put a secret/service-role key in this website.</div>
   </div>
 </section>
@@ -189,18 +207,18 @@ footer{text-align:center;color:var(--muted);padding:30px 15px;font-size:13px}
 <footer>Bookora Library · Read widely. Write boldly. Share responsibly.</footer>
 
 <script>
-/*
-  BOOKORA CONFIGURATION
-
-  Leave these blank for Version 1 (local demo).
-
-  For Version 2, add your Supabase project URL and
-  publishable/anon key. Never use the service_role key.
+/* BOOKORA CONFIGURATION
+   Keep your Supabase project URL and publishable key here.
+   Never use a service_role or secret key in this website.
 */
 const SUPABASE_URL = "https://xugpbjsngmverarcwqpc.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_EHEFt4QNfvDIuJ54_YvksQ_dDWnOPoi";
 
-const supa = (SUPABASE_URL && SUPABASE_PUBLISHABLE_KEY && window.supabase)
+const supa = (
+  SUPABASE_URL.startsWith("https://") &&
+  SUPABASE_PUBLISHABLE_KEY &&
+  window.supabase
+)
   ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY)
   : null;
 
@@ -218,13 +236,17 @@ const samples = [
   {id:"sample-5",title:"The Forgotten Map",pen_name:"Bookora Stories",genre:"Adventure",description:"An old map sends three friends on a surprising journey.",demo:true}
 ];
 
-let books = [...samples];
+let books = [];
 let currentUser = null;
 
 function getLocal(key,fallback=[]) {
-  try { return JSON.parse(localStorage.getItem(key)) || fallback; }
-  catch { return fallback; }
+  try {
+    return JSON.parse(localStorage.getItem(key)) || fallback;
+  } catch {
+    return fallback;
+  }
 }
+
 function setLocal(key,value) {
   localStorage.setItem(key,JSON.stringify(value));
 }
@@ -232,21 +254,34 @@ function setLocal(key,value) {
 function showSection(id) {
   document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
   document.getElementById(id).classList.add("active");
+
   if(id==="shelf") renderShelf();
   if(id==="dashboard") renderDashboard();
+
   window.scrollTo({top:0,behavior:"smooth"});
 }
 
 function toggleTheme() {
   document.body.classList.toggle("dark");
-  localStorage.setItem("bookora-dark",document.body.classList.contains("dark")?"1":"0");
+  localStorage.setItem(
+    "bookora-dark",
+    document.body.classList.contains("dark") ? "1" : "0"
+  );
 }
-if(localStorage.getItem("bookora-dark")==="1") document.body.classList.add("dark");
+
+if(localStorage.getItem("bookora-dark")==="1") {
+  document.body.classList.add("dark");
+}
 
 function fillGenres() {
   const options=GENRES.map(g=>`<option value="${g}">${g}</option>`).join("");
+
   document.getElementById("genreFilter").insertAdjacentHTML("beforeend",options);
-  document.getElementById("bookGenre").insertAdjacentHTML("beforeend",'<option value="">Choose a genre</option>'+options);
+
+  document.getElementById("bookGenre").insertAdjacentHTML(
+    "beforeend",
+    '<option value="">Choose a genre</option>'+options
+  );
 }
 
 function makeBookCard(book) {
@@ -255,6 +290,7 @@ function makeBookCard(book) {
 
   const cover=document.createElement("div");
   cover.className="cover";
+
   if(book.cover_url) {
     const img=document.createElement("img");
     img.src=book.cover_url;
@@ -301,6 +337,7 @@ function makeBookCard(book) {
   actions.append(save,fav,read);
   body.append(title,author,genre,desc,actions);
   card.append(cover,body);
+
   return card;
 }
 
@@ -317,25 +354,38 @@ function renderBooks() {
     (!genre||b.genre===genre)
   );
 
-  if(sort==="az") list.sort((a,b)=>a.title.localeCompare(b.title));
+  if(sort==="az") {
+    list.sort((a,b)=>a.title.localeCompare(b.title));
+  } else {
+    list.sort((a,b)=>
+      new Date(b.created_at||0)-new Date(a.created_at||0)
+    );
+  }
 
   if(!list.length) {
     grid.textContent="No books match your search yet.";
     return;
   }
+
   list.forEach(b=>grid.append(makeBookCard(b)));
 }
 
 function saveBook(id) {
   let ids=getLocal("bookora-shelf");
+
   if(!ids.includes(id)) ids.push(id);
+
   setLocal("bookora-shelf",ids);
   alert("Saved to your bookshelf on this browser.");
 }
 
 function toggleFavourite(id) {
   let ids=getLocal("bookora-favourites");
-  ids=ids.includes(id)?ids.filter(x=>x!==id):[...ids,id];
+
+  ids=ids.includes(id)
+    ? ids.filter(x=>x!==id)
+    : [...ids,id];
+
   setLocal("bookora-favourites",ids);
   renderShelf();
 }
@@ -343,14 +393,20 @@ function toggleFavourite(id) {
 function renderShelf() {
   const shelf=document.getElementById("shelfGrid");
   const fav=document.getElementById("favGrid");
+
   shelf.replaceChildren();
   fav.replaceChildren();
 
   const ids=getLocal("bookora-shelf");
   const favIds=getLocal("bookora-favourites");
 
-  books.filter(b=>ids.includes(b.id)).forEach(b=>shelf.append(makeBookCard(b)));
-  books.filter(b=>favIds.includes(b.id)).forEach(b=>fav.append(makeBookCard(b)));
+  books.filter(b=>ids.includes(b.id)).forEach(
+    b=>shelf.append(makeBookCard(b))
+  );
+
+  books.filter(b=>favIds.includes(b.id)).forEach(
+    b=>fav.append(makeBookCard(b))
+  );
 
   if(!shelf.children.length) shelf.textContent="Your bookshelf is empty.";
   if(!fav.children.length) fav.textContent="No favourites saved yet.";
@@ -361,6 +417,7 @@ function openBook(id) {
   if(!book) return;
 
   document.getElementById("readerTitle").textContent=book.title;
+
   const area=document.getElementById("readerContent");
   area.replaceChildren();
 
@@ -374,14 +431,21 @@ function openBook(id) {
     : "This book has been published in the shared library.";
   area.append(note);
 
-  if(supa && !book.demo && book.file_path) readSharedBook(book);
+  if(supa && !book.demo && book.file_path) {
+    readSharedBook(book);
+  }
+
   showSection("readerSection");
 }
 
 async function readSharedBook(book) {
-  const {data,error}=await supa.storage.from("bookora-files").createSignedUrl(book.file_path,3600);
+  const {data,error}=await supa.storage
+    .from("bookora-files")
+    .createSignedUrl(book.file_path,3600);
+
   if(error) {
-    document.getElementById("readerContent").textContent="Could not open book: "+error.message;
+    document.getElementById("readerContent").textContent=
+      "Could not open book: "+error.message;
     return;
   }
 
@@ -399,6 +463,12 @@ async function readSharedBook(book) {
   } else if(name.endsWith(".txt")) {
     const pre=document.createElement("pre");
     const response=await fetch(url);
+
+    if(!response.ok) {
+      area.textContent="Could not load this text file.";
+      return;
+    }
+
     pre.textContent=await response.text();
     area.append(pre);
   } else {
@@ -417,22 +487,34 @@ function closeReader() {
 
 document.getElementById("bookForm").addEventListener("submit",async event=>{
   event.preventDefault();
+
   const message=document.getElementById("submitMessage");
   message.textContent="";
 
   const file=document.getElementById("bookFile").files[0];
   const cover=document.getElementById("bookCover").files[0];
 
-  if(!file) { message.textContent="Choose a book file."; return; }
-  if(file.size>10*1024*1024) { message.textContent="The book file must be 10 MB or smaller."; return; }
+  if(!file) {
+    message.textContent="Choose a book file.";
+    return;
+  }
+
+  if(file.size>10*1024*1024) {
+    message.textContent="The book file must be 10 MB or smaller.";
+    return;
+  }
 
   const extension=file.name.split(".").pop().toLowerCase();
+
   if(!["pdf","txt","epub"].includes(extension)) {
     message.textContent="Choose a PDF, TXT or EPUB file.";
     return;
   }
 
-  if(cover && (!["image/jpeg","image/png","image/webp"].includes(cover.type)||cover.size>2*1024*1024)) {
+  if(cover && (
+    !["image/jpeg","image/png","image/webp"].includes(cover.type) ||
+    cover.size>2*1024*1024
+  )) {
     message.textContent="Cover must be JPG, PNG or WEBP and no larger than 2 MB.";
     return;
   }
@@ -455,38 +537,55 @@ document.getElementById("bookForm").addEventListener("submit",async event=>{
     }
 
     try {
-      let coverUrl=null;
+      let coverPath=null;
 
       if(cover) {
-        const coverPath=`${currentUser.id}/${crypto.randomUUID()}.${cover.name.split(".").pop().toLowerCase()}`;
-        const coverUpload=await supa.storage.from("bookora-covers").upload(coverPath,cover);
+        coverPath=
+          `${currentUser.id}/${crypto.randomUUID()}.${cover.name.split(".").pop().toLowerCase()}`;
+
+        const coverUpload=await supa.storage
+          .from("bookora-covers")
+          .upload(coverPath,cover);
+
         if(coverUpload.error) throw coverUpload.error;
-        coverUrl=supa.storage.from("bookora-covers").getPublicUrl(coverPath).data.publicUrl;
       }
 
-      const filePath=`${currentUser.id}/${crypto.randomUUID()}.${extension}`;
-      const upload=await supa.storage.from("bookora-files").upload(filePath,file);
+      const filePath=
+        `${currentUser.id}/${crypto.randomUUID()}.${extension}`;
+
+      const upload=await supa.storage
+        .from("bookora-files")
+        .upload(filePath,file);
+
       if(upload.error) throw upload.error;
 
       const {error}=await supa.from("books").insert({
         author_id:currentUser.id,
         title:record.title,
-        pen_name:record.pen_name,
+        author:record.pen_name,
         genre:record.genre,
         description:record.description,
-        cover_url:coverUrl,
+        cover_path:coverPath,
         file_path:filePath,
         file_name:file.name,
         status:"pending"
       });
+
       if(error) throw error;
 
-      message.textContent="Submitted! Your book is waiting for moderator review.";
+      message.textContent=
+        "Submitted! Your book is waiting for moderator review.";
+
     } catch(error) {
       message.textContent="Submission failed: "+error.message;
+      return;
     }
+
   } else {
-    if(cover) record.cover_url=URL.createObjectURL(cover);
+    if(cover) {
+      record.cover_url=URL.createObjectURL(cover);
+    }
+
     let submissions=getLocal("bookora-submissions");
     submissions.push(record);
     setLocal("bookora-submissions",submissions);
@@ -495,7 +594,11 @@ document.getElementById("bookForm").addEventListener("submit",async event=>{
     localBooks.push(record);
     setLocal("bookora-local-books",localBooks);
 
-    message.textContent="Saved on this browser only. Other visitors cannot see it.";
+    books=[...samples,...localBooks];
+    renderBooks();
+
+    message.textContent=
+      "Saved on this browser only. Other visitors cannot see it.";
   }
 
   event.target.reset();
@@ -507,6 +610,7 @@ function renderDashboard() {
   box.replaceChildren();
 
   const submissions=getLocal("bookora-submissions");
+
   if(!submissions.length) {
     box.textContent="No local submissions yet.";
     return;
@@ -514,15 +618,28 @@ function renderDashboard() {
 
   submissions.forEach((book,index)=>{
     const row=document.createElement("p");
-    row.textContent=`${book.title} — ${book.pen_name} (${book.status})`;
+    row.textContent=
+      `${book.title} — ${book.pen_name} (${book.status})`;
 
     const remove=document.createElement("button");
     remove.className="secondary";
     remove.textContent="Remove";
+
     remove.onclick=()=>{
       const list=getLocal("bookora-submissions");
+      const removed=list[index];
+
       list.splice(index,1);
       setLocal("bookora-submissions",list);
+
+      setLocal(
+        "bookora-local-books",
+        getLocal("bookora-local-books").filter(b=>b.id!==removed?.id)
+      );
+
+      books=[...samples,...getLocal("bookora-local-books")];
+
+      renderBooks();
       renderDashboard();
     };
 
@@ -532,25 +649,46 @@ function renderDashboard() {
 
 async function signUp() {
   if(!supa) {
-    alert("Shared accounts are not enabled. Add your Supabase settings in the code first.");
+    alert("Shared accounts are not enabled. Check your Supabase settings in the code.");
     return;
   }
 
-  const email=document.getElementById("email").value;
+  const email=document.getElementById("email").value.trim();
   const password=document.getElementById("password").value;
-  const penName=document.getElementById("accountPenName").value;
+  const penName=document.getElementById("accountPenName").value.trim();
+
+  if(!email) {
+    alert("Enter your email address.");
+    return;
+  }
 
   if(password.length<8) {
     alert("Use a password with at least 8 characters.");
     return;
   }
 
-  const {error}=await supa.auth.signUp({
-    email,password,
-    options:{data:{pen_name:penName}}
-  });
+  try {
+    const {error}=await supa.auth.signUp({
+      email,
+      password,
+      options:{
+        data:{
+          pen_name:penName,
+          display_name:penName
+        },
+        emailRedirectTo:window.location.origin+window.location.pathname
+      }
+    });
 
-  alert(error?error.message:"Account created. Check your email if confirmation is enabled.");
+    alert(
+      error
+        ? error.message
+        : "Account created. Check your email if confirmation is enabled."
+    );
+
+  } catch(error) {
+    alert("Sign-up failed: "+error.message);
+  }
 }
 
 async function signIn() {
@@ -559,80 +697,134 @@ async function signIn() {
     return;
   }
 
-  const {data,error}=await supa.auth.signInWithPassword({
-    email:document.getElementById("email").value,
-    password:document.getElementById("password").value
-  });
+  try {
+    const {data,error}=await supa.auth.signInWithPassword({
+      email:document.getElementById("email").value.trim(),
+      password:document.getElementById("password").value
+    });
 
-  if(error) { alert(error.message); return; }
-  currentUser=data.user;
-  updateAuthUI();
-  await loadSharedBooks();
+    if(error) {
+      alert(error.message);
+      return;
+    }
+
+    currentUser=data.user;
+    updateAuthUI();
+    await loadSharedBooks();
+
+  } catch(error) {
+    alert("Login failed: "+error.message);
+  }
 }
 
 async function signOut() {
   if(supa) await supa.auth.signOut();
+
   currentUser=null;
   updateAuthUI();
 }
 
 function updateAuthUI() {
-  document.getElementById("signedOut").classList.toggle("hidden",!!currentUser);
-  document.getElementById("signedIn").classList.toggle("hidden",!currentUser);
-  document.getElementById("userLabel").textContent=currentUser
-    ? "Signed in as "+currentUser.email : "";
+  document.getElementById("signedOut")
+    .classList.toggle("hidden",!!currentUser);
 
-  if(currentUser) loadPendingBooks();
+  document.getElementById("signedIn")
+    .classList.toggle("hidden",!currentUser);
+
+  document.getElementById("userLabel").textContent=
+    currentUser ? "Signed in as "+currentUser.email : "";
+
+  if(currentUser) {
+    loadPendingBooks();
+  } else {
+    document.getElementById("adminPanel").classList.add("hidden");
+  }
 }
 
 async function loadSharedBooks() {
   if(!supa) return;
 
   const {data,error}=await supa.from("books")
-    .select("id,title,pen_name,genre,description,cover_url,file_path,file_name,created_at")
+    .select("id,title,author,genre,description,cover_path,file_path,file_name,created_at")
     .eq("status","approved")
     .order("created_at",{ascending:false});
 
   if(error) {
     console.error(error);
+    document.getElementById("modeNotice").textContent=
+      "Could not load shared books: "+error.message;
     return;
   }
 
-  books=[...samples,...(data||[])];
+  const shared=(data||[]).map(book=>({
+    ...book,
+    pen_name:book.author,
+    cover_url:book.cover_path
+      ? supa.storage.from("bookora-covers")
+          .getPublicUrl(book.cover_path).data.publicUrl
+      : null
+  }));
+
+  books=[
+    ...samples,
+    ...getLocal("bookora-local-books"),
+    ...shared
+  ];
+
   renderBooks();
 }
 
 async function loadPendingBooks() {
   if(!supa||!currentUser) return;
 
-  const {data:admin}=await supa.from("bookora_admins")
+  const panel=document.getElementById("adminPanel");
+  const box=document.getElementById("pendingBooks");
+
+  const {data:admin,error:adminError}=await supa.from("bookora_admins")
     .select("user_id")
     .eq("user_id",currentUser.id)
     .maybeSingle();
 
-  const panel=document.getElementById("adminPanel");
+  if(adminError) {
+    panel.classList.add("hidden");
+    console.error(adminError);
+    return;
+  }
+
   panel.classList.toggle("hidden",!admin);
+
   if(!admin) return;
 
   const {data,error}=await supa.from("books")
-    .select("id,title,pen_name,genre")
-    .eq("status","pending");
+    .select("id,title,author,genre")
+    .eq("status","pending")
+    .order("created_at",{ascending:true});
 
-  const box=document.getElementById("pendingBooks");
   box.replaceChildren();
 
-  if(error) { box.textContent=error.message; return; }
-  if(!data?.length) { box.textContent="No pending books."; return; }
+  if(error) {
+    box.textContent=error.message;
+    return;
+  }
+
+  if(!data?.length) {
+    box.textContent="No pending books.";
+    return;
+  }
 
   data.forEach(book=>{
     const row=document.createElement("p");
-    row.textContent=`${book.title} — ${book.pen_name} (${book.genre}) `;
+
+    row.textContent=
+      `${book.title} — ${book.author} (${book.genre}) `;
 
     ["approved","rejected"].forEach(status=>{
       const button=document.createElement("button");
       button.className="secondary";
       button.textContent=status;
+
       button.onclick=()=>moderateBook(book.id,status);
+
       row.append(button);
     });
 
@@ -641,14 +833,25 @@ async function loadPendingBooks() {
 }
 
 async function moderateBook(id,status) {
-  const {error}=await supa.from("books").update({status}).eq("id",id);
+  if(!supa||!currentUser) return;
+
+  const {error}=await supa.from("books")
+    .update({status})
+    .eq("id",id);
+
   alert(error?error.message:"Book status updated.");
+
   await loadPendingBooks();
   await loadSharedBooks();
 }
 
 if(supa) {
-  supa.auth.getUser().then(({data})=>{
+  supa.auth.getUser().then(({data,error})=>{
+    if(error) {
+      console.error(error);
+      return;
+    }
+
     currentUser=data.user;
     updateAuthUI();
     loadSharedBooks();
@@ -664,6 +867,12 @@ if(supa) {
 }
 
 fillGenres();
+
+books=[
+  ...samples,
+  ...getLocal("bookora-local-books")
+];
+
 renderBooks();
 renderDashboard();
 </script>
