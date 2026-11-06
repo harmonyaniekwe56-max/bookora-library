@@ -451,6 +451,8 @@ function renderShelf() {
 function openBook(id) {
   const book=books.find(b=>String(b.id)===String(id));
   if(!book) return;
+  activeReaderBookId = String(book.id);
+loadReaderActivity();
 
   document.getElementById("readerTitle").textContent=book.title;
 
