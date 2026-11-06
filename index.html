@@ -565,6 +565,110 @@ document.getElementById("bookForm").addEventListener("submit",async event=>{
     created_at:new Date().toISOString(),
     status:"pending"
   };
+let activeReaderBookId = null;
+
+function loadReaderActivity() {
+  if (!activeReaderBookId) return;
+
+  const progress = getLocal("bookora-progress", {});
+  const value = progress[activeReaderBookId] || 0;
+
+  document.getElementById("readingProgress").value = value;
+  document.getElementById("progressValue").textContent = value;
+
+  renderReviews();
+  renderComments();
+}
+
+function renderReviews() {
+  const list = document.getElementById("reviewList");
+  list.replaceChildren();
+
+  const reviews = getLocal("bookora-reviews", {});
+  const entries = reviews[activeReaderBookId] || [];
+
+  entries.forEach(review => {
+    const item = document.createElement("p");
+    item.textContent = "★".repeat(review.rating) + " — " + review.text;
+    list.append(item);
+  });
+}
+
+function renderComments() {
+  const list = document.getElementById("commentList");
+  list.replaceChildren();
+
+  const comments = getLocal("bookora-comments", {});
+  const entries = comments[activeReaderBookId] || [];
+
+  entries.forEach(comment => {
+    const item = document.createElement("p");
+    item.textContent = comment;
+    list.append(item);
+  });
+}
+
+function postReview() {
+  if (!activeReaderBookId) return;
+
+  const text = document.getElementById("reviewText").value.trim();
+  const rating = Number(document.getElementById("reviewRating").value);
+
+  if (!text) {
+    alert("Please write a review first.");
+    return;
+  }
+
+  const reviews = getLocal("bookora-reviews", {});
+
+  if (!reviews[activeReaderBookId]) {
+    reviews[activeReaderBookId] = [];
+  }
+
+  reviews[activeReaderBookId].push({ rating, text });
+
+  setLocal("bookora-reviews", reviews);
+  document.getElementById("reviewText").value = "";
+
+  renderReviews();
+}
+
+function postComment() {
+  if (!activeReaderBookId) return;
+
+  const text = document.getElementById("commentText").value.trim();
+
+  if (!text) {
+    alert("Please write a comment first.");
+    return;
+  }
+
+  const comments = getLocal("bookora-comments", {});
+
+  if (!comments[activeReaderBookId]) {
+    comments[activeReaderBookId] = [];
+  }
+
+  comments[activeReaderBookId].push(text);
+
+  setLocal("bookora-comments", comments);
+  document.getElementById("commentText").value = "";
+
+  renderComments();
+}
+
+document.getElementById("readingProgress").addEventListener("input", event => {
+  if (!activeReaderBookId) return;
+
+  const value = Number(event.target.value);
+  const progress = getLocal("bookora-progress", {});
+
+  progress[activeReaderBookId] = value;
+  setLocal("bookora-progress", progress);
+
+  document.getElementById("progressValue").textContent = value;
+});
+
 
   if(supa) {
     if(!currentUser) {
