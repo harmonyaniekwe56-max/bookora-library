@@ -195,13 +195,49 @@ footer{text-align:center;color:var(--muted);padding:30px 15px;font-size:13px}
   </div>
 </section>
 
+```html
 <section id="readerSection" class="section">
   <h2 id="readerTitle">Book Reader</h2>
+
   <div class="panel">
     <button class="secondary" onclick="closeReader()">Close Reader</button>
-    <div id="readerContent" class="reader">Choose a book to read.</div>
+
+    <div id="readerContent" class="reader">
+      Choose a book to read.
+    </div>
+
+    <hr>
+
+    <h3>Reading Progress</h3>
+    <label for="readingProgress">How far have you read?</label>
+    <input type="range" id="readingProgress" min="0" max="100" value="0">
+    <p><span id="progressValue">0</span>% completed</p>
+
+    <hr>
+
+    <h3>Reader Reviews</h3>
+    <label for="reviewRating">Your rating</label>
+    <select id="reviewRating">
+      <option value="5">★★★★★</option>
+      <option value="4">★★★★</option>
+      <option value="3">★★★</option>
+      <option value="2">★★</option>
+      <option value="1">★</option>
+    </select>
+
+    <textarea id="reviewText" placeholder="Write your review..."></textarea>
+    <button onclick="postReview()">Post Review</button>
+    <div id="reviewList"></div>
+
+    <hr>
+
+    <h3>Comments</h3>
+    <textarea id="commentText" placeholder="Write a comment..."></textarea>
+    <button onclick="postComment()">Post Comment</button>
+    <div id="commentList"></div>
   </div>
 </section>
+```
 </main>
 
 <footer>Bookora Library · Read widely. Write boldly. Share responsibly.</footer>
