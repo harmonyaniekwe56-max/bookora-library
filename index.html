@@ -277,7 +277,8 @@ const samples = [
   {id:"sample-5",title:"The Forgotten Map",pen_name:"Bookora Stories",genre:"Adventure",description:"An old map sends three friends on a surprising journey.",demo:true}
 ];
 
-let books = [];async function loadBooks() {
+let books = [...samples];
+;async function loadBooks() {
   if (!supa) {
     books = [...samples];
     renderBooks();
