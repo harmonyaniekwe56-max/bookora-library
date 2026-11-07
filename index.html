@@ -812,7 +812,62 @@ function renderDashboard() {
     box.append(row,remove);
   });
 }
+async function loadAuthorProfile() {
+  if (!supa || !currentUser) return;
 
+  const message = document.getElementById("profileMessage");
+  message.textContent = "Loading your profile...";
+
+  const { data, error } = await supa
+    .from("profiles")
+    .select("pen_name, bio")
+    .eq("id", currentUser.id)
+    .maybeSingle();
+
+  if (error) {
+    message.textContent = "Could not load profile: " + error.message;
+    return;
+  }
+
+  document.getElementById("profilePenName").value =
+    data?.pen_name || currentUser.user_metadata?.pen_name || "";
+
+  document.getElementById("profileBio").value = data?.bio || "";
+
+  message.textContent = "";
+}
+
+async function saveAuthorProfile() {
+  if (!supa || !currentUser) {
+    alert("Please log in first.");
+    return;
+  }
+
+  const penName = document.getElementById("profilePenName").value.trim();
+  const bio = document.getElementById("profileBio").value.trim();
+  const message = document.getElementById("profileMessage");
+
+  if (!penName) {
+    message.textContent = "Please enter your pen name.";
+    return;
+  }
+
+  message.textContent = "Saving your profile...";
+
+  const { error } = await supa
+    .from("profiles")
+    .upsert({
+      id: currentUser.id,
+      pen_name: penName,
+      bio: bio
+    }, {
+      onConflict: "id"
+    });
+
+  message.textContent = error
+    ? "Profile saving failed: " + error.message
+    : "Your author profile has been saved!";
+}
 async function signUp() {
   if(!supa) {
     alert("Shared accounts are not enabled. Check your Supabase settings in the code.");
