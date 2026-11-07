@@ -623,18 +623,18 @@ document.getElementById("bookForm").addEventListener("submit", async event => {
     }
 
     const { error: databaseError } = await supa
-      .from("books")
-      .insert({
-        author_id: userId,
-        title,
-        pen_name: penName,
-        genre,
-        description,
-        file_name: file.name,
-        file_path: filePath,
-        cover_path: coverPath,
-        status: "pending"
-      });
+  .from("books")
+  .insert({
+    author_id: userId,
+    title,
+    author: penName,
+    genre,
+    description,
+    file_name: file.name,
+    file_path: filePath,
+    cover_path: coverPath,
+    status: "pending"
+  });
 
     if (databaseError) throw databaseError;
 
