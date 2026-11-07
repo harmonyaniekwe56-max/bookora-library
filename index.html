@@ -842,7 +842,24 @@ async function signIn() {
   if(!supa) {
     alert("Shared accounts are not enabled in demo mode.");
     return;
+  }async function resetPassword() {
+  const email = document.getElementById("email").value.trim();
+
+  if (!email) {
+    alert("Please enter your email address first.");
+    return;
   }
+
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin
+  });
+
+  if (error) {
+    alert("Password reset failed: " + error.message);
+  } else {
+    alert("Password reset email sent! Please check your inbox.");
+  }
+}
 
   try {
     const {data,error}=await supa.auth.signInWithPassword({
