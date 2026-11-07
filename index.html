@@ -179,7 +179,28 @@ footer{text-align:center;color:var(--muted);padding:30px 15px;font-size:13px}
   <h2>Author Area</h2>
   <div class="panel">
     <p class="muted">Your local submissions appear here in demo mode.</p>
-    <div id="authorSubmissions"></div>
+    <div id="authorSubmissions"></div><div class="panel">
+  <h3>My Author Profile</h3>
+
+  <label for="profilePenName">Pen name</label>
+  <input
+    id="profilePenName"
+    maxlength="80"
+    placeholder="Enter your author name"
+  >
+
+  <label for="profileBio">About the author</label>
+  <textarea
+    id="profileBio"
+    maxlength="1000"
+    placeholder="Write a short biography about yourself..." >
+    </textarea>
+  <button type="button" onclick="saveAuthorProfile()">
+    Save Profile
+  </button>
+
+  <p id="profileMessage" role="status"></p>
+</div>
   </div>
   <div id="adminPanel" class="panel hidden">
     <h3>Pending submissions (admin)</h3>
