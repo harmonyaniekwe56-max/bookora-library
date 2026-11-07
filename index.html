@@ -459,7 +459,48 @@ function renderBooks() {
 
   list.forEach(b=>grid.append(makeBookCard(b)));
 }
+async function loadApprovedBooks() {
+  if (!supa) {
+    books = [...samples];
+    renderBooks();
+    return;
+  }
 
+  try {
+    const { data, error } = await supa
+      .from("books")
+      .select(`
+        id,
+        title,
+        pen_name,
+        genre,
+        description,
+        cover_url,
+        file_path,
+        file_name,
+        status,
+        created_at,
+        author_id
+      `)
+      .eq("status", "approved")
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+
+    books = [
+      ...samples,
+      ...(data || [])
+    ];
+
+    renderBooks();
+
+  } catch (error) {
+    console.error("Bookora loading error:", error);
+
+    books = [...samples];
+    renderBooks();
+  }
+}
 function saveBook(id) {
   let ids=getLocal("bookora-shelf");
 
