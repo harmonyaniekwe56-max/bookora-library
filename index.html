@@ -379,7 +379,7 @@ function renderBooks() {
   const genre=document.getElementById("genreFilter").value;
   const sort=document.getElementById("sortFilter").value;
   let list=books.filter(b=>
-    (!q||(b.title+" "+(b.pen_name||"")).toLowerCase().includes(q)) &&
+    (!q||(b.title+" "+(b.pen_name||b.author||"")).toLowerCase()) &&
     (!genre||b.genre===genre)
   );
   if(sort==="az") {
