@@ -277,7 +277,33 @@ const samples = [
   {id:"sample-5",title:"The Forgotten Map",pen_name:"Bookora Stories",genre:"Adventure",description:"An old map sends three friends on a surprising journey.",demo:true}
 ];
 
-let books = [];
+let books = [];async function loadBooks() {
+  if (!supa) {
+    books = [...samples];
+    renderBooks();
+    return;
+  }
+
+  const { data, error } = await supa
+    .from("books")
+    .select("*")
+    .eq("status", "approved")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Could not load books:", error);
+    books = [...samples];
+    renderBooks();
+    return;
+  }
+
+  books = [...samples, ...(data || [])];
+  renderBooks();
+}if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", loadBooks);
+} else {
+  loadBooks();
+}
 let currentUser = null;
 // BOOKORA ONLINE DATABASE CONNECTION TEST
 
