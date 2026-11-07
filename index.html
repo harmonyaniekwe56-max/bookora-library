@@ -205,7 +205,29 @@ footer{text-align:center;color:var(--muted);padding:30px 15px;font-size:13px}
   <div id="adminPanel" class="panel hidden">
     <h3>Pending submissions (admin)</h3>
     <div id="pendingBooks"></div>
-  </div>
+  </div><div class="panel">
+  <h3>My Author Profile</h3>
+
+  <label for="profilePenName">Pen name</label>
+  <input
+    id="profilePenName"
+    maxlength="80"
+    placeholder="Enter your pen name"
+  >
+
+  <label for="profileBio">Author biography</label>
+  <textarea
+    id="profileBio"
+    maxlength="1000"
+    placeholder="Tell readers a little about yourself..."
+  ></textarea>
+
+  <button type="button" onclick="saveAuthorProfile()">
+    Save Profile
+  </button>
+
+  <p id="profileMessage" role="status"></p>
+</div>
 </section>
 <section id="readerSection" class="section">
   <h2 id="readerTitle">Book Reader</h2>
