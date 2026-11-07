@@ -550,51 +550,101 @@ async function readSharedBook(book) {
 function closeReader() {
   showSection("discover");
 }
-
-document.getElementById("bookForm").addEventListener("submit",async event=>{
+document.getElementById("bookForm").addEventListener("submit", async event => {
   event.preventDefault();
 
-  const message=document.getElementById("submitMessage");
-  message.textContent="";
+  const message = document.getElementById("submitMessage");
+  message.textContent = "";
 
-  const file=document.getElementById("bookFile").files[0];
-  const cover=document.getElementById("bookCover").files[0];
-
-  if(!file) {
-    message.textContent="Choose a book file.";
+  if (!supa || !currentUser) {
+    message.textContent = "Please log in before submitting a book.";
     return;
   }
 
-  if(file.size>10*1024*1024) {
-    message.textContent="The book file must be 10 MB or smaller.";
+  const file = document.getElementById("bookFile").files[0];
+  const cover = document.getElementById("bookCover").files[0];
+
+  const title = document.getElementById("bookTitle").value.trim();
+  const penName = document.getElementById("penName").value.trim();
+  const genre = document.getElementById("bookGenre").value;
+  const description = document.getElementById("bookDescription").value.trim();
+
+  if (!file) {
+    message.textContent = "Choose a book file.";
     return;
   }
 
-  const extension=file.name.split(".").pop().toLowerCase();
-
-  if(!["pdf","txt","epub"].includes(extension)) {
-    message.textContent="Choose a PDF, TXT or EPUB file.";
+  if (file.size > 10 * 1024 * 1024) {
+    message.textContent = "Book files must be 10 MB or smaller.";
     return;
   }
 
-  if(cover && (
-    !["image/jpeg","image/png","image/webp"].includes(cover.type) ||
-    cover.size>2*1024*1024
+  const extension = file.name.split(".").pop().toLowerCase();
+
+  if (!["pdf", "txt", "epub"].includes(extension)) {
+    message.textContent = "Choose a PDF, TXT or EPUB file.";
+    return;
+  }
+
+  if (cover && (
+    !["image/jpeg", "image/png", "image/webp"].includes(cover.type) ||
+    cover.size > 2 * 1024 * 1024
   )) {
-    message.textContent="Cover must be JPG, PNG or WEBP and no larger than 2 MB.";
+    message.textContent = "Cover must be JPG, PNG or WEBP and no larger than 2 MB.";
     return;
   }
 
-  const record={
-    id:"local-"+Date.now(),
-    title:document.getElementById("bookTitle").value.trim(),
-    pen_name:document.getElementById("penName").value.trim(),
-    genre:document.getElementById("bookGenre").value,
-    description:document.getElementById("bookDescription").value.trim(),
-    file_name:file.name,
-    created_at:new Date().toISOString(),
-    status:"pending"
-  };
+  const userId = currentUser.id;
+  const uniqueId = crypto.randomUUID();
+
+  const filePath = `${userId}/${uniqueId}.${extension}`;
+  let coverPath = null;
+
+  message.textContent = "Uploading your book...";
+
+  try {
+    const { error: uploadError } = await supa.storage
+      .from("book-files")
+      .upload(filePath, file);
+
+    if (uploadError) throw uploadError;
+
+    if (cover) {
+      const coverExtension = cover.name.split(".").pop().toLowerCase();
+      coverPath = `${userId}/${uniqueId}.${coverExtension}`;
+
+      const { error: coverError } = await supa.storage
+        .from("book-covers")
+        .upload(coverPath, cover);
+
+      if (coverError) throw coverError;
+    }
+
+    const { error: databaseError } = await supa
+      .from("books")
+      .insert({
+        author_id: userId,
+        title,
+        pen_name: penName,
+        genre,
+        description,
+        file_name: file.name,
+        file_path: filePath,
+        cover_url: coverPath,
+        status: "pending"
+      });
+
+    if (databaseError) throw databaseError;
+
+    message.textContent = "Your book has been submitted for review!";
+
+    document.getElementById("bookForm").reset();
+
+  } catch (error) {
+    console.error("Bookora submission error:", error);
+    message.textContent = "Submission failed: " + error.message;
+  }
+});
 let activeReaderBookId = null;
 
 function loadReaderActivity() {
