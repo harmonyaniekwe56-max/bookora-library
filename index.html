@@ -973,8 +973,10 @@ function updateAuthUI() {
     currentUser ? "Signed in as "+currentUser.email : "";
 
   if(currentUser) {
-    loadPendingBooks();
-  } else {
+  loadPendingBooks();
+  loadAuthorProfile();
+}
+  else {
     document.getElementById("adminPanel").classList.add("hidden");
   }
 }
