@@ -5,10 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Bookora Library — discover stories, read books and share your writing.">
 <title>Bookora Library</title>
-
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <style>
 :root {
   --bg:#f8f5fc;
@@ -70,7 +68,6 @@ footer{text-align:center;color:var(--muted);padding:30px 15px;font-size:13px}
 }
 </style>
 </head>
-
 <body>
 <header>
   <div class="brand">Bookora <span>Library</span></div>
@@ -83,14 +80,12 @@ footer{text-align:center;color:var(--muted);padding:30px 15px;font-size:13px}
     <button onclick="toggleTheme()">◐</button>
   </nav>
 </header>
-
 <main>
 <section class="hero">
   <h1>Every story opens a door.</h1>
   <p>Discover new worlds, keep your favourite reads together, and share stories of your own. Welcome to Bookora.</p>
   <button onclick="showSection('discover')">Explore the library</button>
 </section>
-
 <section id="discover" class="section active">
   <h2>Discover Books</h2>
   <div class="panel">
@@ -108,7 +103,6 @@ footer{text-align:center;color:var(--muted);padding:30px 15px;font-size:13px}
   </div>
   <div id="bookGrid" class="grid"></div>
 </section>
-
 <section id="shelf" class="section">
   <h2>My Bookshelf</h2>
   <div class="panel">
@@ -117,12 +111,10 @@ footer{text-align:center;color:var(--muted);padding:30px 15px;font-size:13px}
   <h2>Favourites</h2>
   <div id="favGrid" class="grid"></div>
 </section>
-
 <section id="submit" class="section">
   <h2>Submit Your Book</h2>
   <div class="panel">
     <div class="notice">In demo mode, submissions are saved only in this browser. In shared mode, they go to the library for moderator review. Only submit writing you own or have permission to share.</div>
-
     <form id="bookForm" class="formgrid">
       <div>
         <label for="bookTitle">Book title</label>
@@ -155,7 +147,6 @@ footer{text-align:center;color:var(--muted);padding:30px 15px;font-size:13px}
     <p id="submitMessage" role="status"></p>
   </div>
 </section>
-
 <section id="account" class="section">
   <h2>Account</h2>
   <div class="panel">
@@ -167,7 +158,6 @@ footer{text-align:center;color:var(--muted);padding:30px 15px;font-size:13px}
       <input id="password" type="password" autocomplete="new-password">
       <label>Pen name</label>
       <input id="accountPenName" maxlength="80">
-
       <div class="row">
         <button type="button" onclick="signUp()">Sign Up</button>
         <button type="button" class="secondary" onclick="signIn()">Log In</button>
@@ -178,16 +168,13 @@ footer{text-align:center;color:var(--muted);padding:30px 15px;font-size:13px}
 </div>
       </div>
     </div>
-
     <div id="signedIn" class="hidden">
       <p id="userLabel"></p>
       <button onclick="signOut()">Log Out</button>
     </div>
-
     <div class="notice">Shared accounts require your own Supabase project. Never put a secret/service-role key in this website.</div>
   </div>
 </section>
-
 <section id="dashboard" class="section">
   <h2>Author Area</h2>
   <div class="panel">
@@ -201,23 +188,17 @@ footer{text-align:center;color:var(--muted);padding:30px 15px;font-size:13px}
 </section>
 <section id="readerSection" class="section">
   <h2 id="readerTitle">Book Reader</h2>
-
   <div class="panel">
     <button class="secondary" onclick="closeReader()">Close Reader</button>
-
     <div id="readerContent" class="reader">
       Choose a book to read.
     </div>
-
     <hr>
-
     <h3>Reading Progress</h3>
     <label for="readingProgress">How far have you read?</label>
     <input type="range" id="readingProgress" min="0" max="100" value="0">
     <p><span id="progressValue">0</span>% completed</p>
-
     <hr>
-
     <h3>Reader Reviews</h3>
     <label for="reviewRating">Your rating</label>
     <select id="reviewRating">
@@ -227,13 +208,10 @@ footer{text-align:center;color:var(--muted);padding:30px 15px;font-size:13px}
       <option value="2">★★</option>
       <option value="1">★</option>
     </select>
-
     <textarea id="reviewText" placeholder="Write your review..."></textarea>
     <button onclick="postReview()">Post Review</button>
     <div id="reviewList"></div>
-
     <hr>
-
     <h3>Comments</h3>
     <textarea id="commentText" placeholder="Write a comment..."></textarea>
     <button onclick="postComment()">Post Comment</button>
@@ -242,9 +220,7 @@ footer{text-align:center;color:var(--muted);padding:30px 15px;font-size:13px}
 </section>
 ```
 </main>
-
 <footer>Bookora Library · Read widely. Write boldly. Share responsibly.</footer>
-
 <script>
 /* BOOKORA CONFIGURATION
    Keep your Supabase project URL and publishable key here.
@@ -252,7 +228,6 @@ footer{text-align:center;color:var(--muted);padding:30px 15px;font-size:13px}
 */
 const SUPABASE_URL = "https://xugpbjsngmverarcwqpc.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_EHEFt4QNfvDIuJ54_YvksQ_dDWnOPoi";
-
 const supa = (
   SUPABASE_URL.startsWith("https://") &&
   SUPABASE_PUBLISHABLE_KEY &&
@@ -260,13 +235,11 @@ const supa = (
 )
   ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY)
   : null;
-
 const GENRES = [
   "Fantasy","Romance","Mystery","Thriller","Adventure",
   "Science Fiction","Historical Fiction","Poetry","Drama",
   "Comedy","Non-Fiction","Young Adult","Children"
 ];
-
 const samples = [
   {id:"sample-1",title:"The Hidden Kingdom",pen_name:"Bookora Stories",genre:"Fantasy",description:"A mysterious map leads a young explorer towards a kingdom hidden from ordinary eyes.",demo:true},
   {id:"sample-2",title:"Letters in the Rain",pen_name:"Bookora Stories",genre:"Romance",description:"Two classmates discover that a series of letters can change an ordinary school year.",demo:true},
@@ -274,7 +247,6 @@ const samples = [
   {id:"sample-4",title:"Beyond the Stars",pen_name:"Bookora Stories",genre:"Science Fiction",description:"A curious crew sets out to explore an unusual signal beyond their world.",demo:true},
   {id:"sample-5",title:"The Forgotten Map",pen_name:"Bookora Stories",genre:"Adventure",description:"An old map sends three friends on a surprising journey.",demo:true}
 ];
-
 let books = [...samples];
 ;async function loadBooks() {
   if (!supa) {
@@ -282,20 +254,17 @@ let books = [...samples];
     renderBooks();
     return;
   }
-
   const { data, error } = await supa
     .from("books")
     .select("*")
     .eq("status", "approved")
     .order("created_at", { ascending: false });
-
   if (error) {
     console.error("Could not load books:", error);
     books = [...samples];
     renderBooks();
     return;
   }
-
   books = [...samples, ...(data || [])];
   renderBooks();
 }if (document.readyState === "loading") {
@@ -305,7 +274,6 @@ let books = [...samples];
 }
 let currentUser = null;
 // BOOKORA ONLINE DATABASE CONNECTION TEST
-
 async function testBookoraDatabase() {
   if (!supa) {
     console.error("Bookora database is not connected.");
@@ -313,18 +281,15 @@ async function testBookoraDatabase() {
   }window.addEventListener("load", () => {
   testBookoraDatabase();
 });
-
   const { data, error } = await supa
     .from("books")
     .select("id, title, genre, status")
     .limit(5);
-
   if (error) {
     console.error("Database connection error:", error.message);
     alert("Database error: " + error.message);
     return;
   }
-
   console.log("Bookora database connected successfully!");
   console.log("Available books:", data);
 }
@@ -335,21 +300,16 @@ function getLocal(key,fallback=[]) {
     return fallback;
   }
 }
-
 function setLocal(key,value) {
   localStorage.setItem(key,JSON.stringify(value));
 }
-
 function showSection(id) {
   document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
   document.getElementById(id).classList.add("active");
-
   if(id==="shelf") renderShelf();
   if(id==="dashboard") renderDashboard();
-
   window.scrollTo({top:0,behavior:"smooth"});
 }
-
 function toggleTheme() {
   document.body.classList.toggle("dark");
   localStorage.setItem(
@@ -357,11 +317,9 @@ function toggleTheme() {
     document.body.classList.contains("dark") ? "1" : "0"
   );
 }
-
 if(localStorage.getItem("bookora-dark")==="1") {
   document.body.classList.add("dark");
 }
-
 function fillGenres() {
   const options=GENRES.map(g=>`<option value="${g}">${g}</option>`).join("");
 
@@ -372,14 +330,11 @@ function fillGenres() {
     '<option value="">Choose a genre</option>'+options
   );
 }
-
 function makeBookCard(book) {
   const card=document.createElement("article");
   card.className="book";
-
   const cover=document.createElement("div");
   cover.className="cover";
-
   if(book.cover_url) {
     const img=document.createElement("img");
     img.src=book.cover_url;
@@ -388,61 +343,46 @@ function makeBookCard(book) {
   } else {
     cover.textContent="📖 "+book.title;
   }
-
   const body=document.createElement("div");
   body.className="bookbody";
-
   const title=document.createElement("h3");
   title.textContent=book.title;
-
   const author=document.createElement("div");
   author.className="muted";
   author.textContent="By "+(book.pen_name||"Unknown author");
-
   const genre=document.createElement("span");
   genre.className="tag";
   genre.textContent=book.genre||"Uncategorised";
-
   const desc=document.createElement("p");
   desc.textContent=book.description||"";
-
   const actions=document.createElement("div");
   actions.className="actions";
-
   const save=document.createElement("button");
   save.className="secondary";
   save.textContent="Add to Shelf";
   save.onclick=()=>saveBook(book.id);
-
   const fav=document.createElement("button");
   fav.className="secondary";
   fav.textContent="♡ Favourite";
   fav.onclick=()=>toggleFavourite(book.id);
-
   const read=document.createElement("button");
   read.textContent="Read Details";
   read.onclick=()=>openBook(book.id);
-
   actions.append(save,fav,read);
   body.append(title,author,genre,desc,actions);
   card.append(cover,body);
-
   return card;
 }
-
 function renderBooks() {
   const grid=document.getElementById("bookGrid");
   grid.replaceChildren();
-
   const q=document.getElementById("search").value.toLowerCase();
   const genre=document.getElementById("genreFilter").value;
   const sort=document.getElementById("sortFilter").value;
-
   let list=books.filter(b=>
     (!q||(b.title+" "+(b.pen_name||"")).toLowerCase().includes(q)) &&
     (!genre||b.genre===genre)
   );
-
   if(sort==="az") {
     list.sort((a,b)=>a.title.localeCompare(b.title));
   } else {
@@ -450,12 +390,10 @@ function renderBooks() {
       new Date(b.created_at||0)-new Date(a.created_at||0)
     );
   }
-
   if(!list.length) {
     grid.textContent="No books match your search yet.";
     return;
   }
-
   list.forEach(b=>grid.append(makeBookCard(b)));
 }
 async function loadApprovedBooks() {
@@ -464,7 +402,6 @@ async function loadApprovedBooks() {
     renderBooks();
     return;
   }
-
   try {
     const { data, error } = await supa
       .from("books")
