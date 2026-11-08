@@ -343,6 +343,7 @@ function showSection(id) {
   document.getElementById(id).classList.add("active");
   if(id==="shelf") renderShelf();
   if(id==="dashboard") renderDashboard();
+  if(id==="authors") loadPublicAuthors();
   window.scrollTo({top:0,behavior:"smooth"});
 }let publicAuthors = [];
 
