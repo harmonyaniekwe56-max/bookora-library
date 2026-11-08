@@ -104,6 +104,22 @@ footer{text-align:center;color:var(--muted);padding:30px 15px;font-size:13px}
   </div>
   <div id="bookGrid" class="grid"></div>
 </section>
+<section id="authors" class="section">
+  <h2>Meet Our Authors</h2>
+  <p>Discover the writers behind the stories you love.</p>
+
+  <div class="panel">
+    <input
+      id="authorSearch"
+      placeholder="Search author by pen name"
+      oninput="renderAuthors()"
+    >
+  </div>
+
+  <div id="authorGrid" class="grid">
+    Loading authors...
+  </div>
+</section>
 <section id="shelf" class="section">
   <h2>My Bookshelf</h2>
   <div class="panel">
