@@ -344,6 +344,66 @@ function showSection(id) {
   if(id==="shelf") renderShelf();
   if(id==="dashboard") renderDashboard();
   window.scrollTo({top:0,behavior:"smooth"});
+}let publicAuthors = [];
+
+async function loadPublicAuthors() {
+  const grid = document.getElementById("authorGrid");
+  grid.textContent = "Loading authors...";
+
+  if (!supa) {
+    grid.textContent = "Author profiles are currently unavailable.";
+    return;
+  }
+
+  const { data, error } = await supa
+    .from("profiles")
+    .select("id, pen_name, bio")
+    .order("pen_name", { ascending: true });
+
+  if (error) {
+    console.error("Could not load authors:", error);
+    grid.textContent = "Could not load author profiles.";
+    return;
+  }
+
+  publicAuthors = data || [];
+  renderAuthors();
+}
+
+function renderAuthors() {
+  const grid = document.getElementById("authorGrid");
+  grid.replaceChildren();
+
+  const search = document
+    .getElementById("authorSearch")
+    .value.trim().toLowerCase();
+
+  const filtered = publicAuthors.filter(author =>
+    (author.pen_name || "").toLowerCase().includes(search)
+  );
+
+  if (!filtered.length) {
+    grid.textContent = "No author profiles found.";
+    return;
+  }
+
+  filtered.forEach(author => {
+    const card = document.createElement("article");
+    card.className = "book";
+
+    const body = document.createElement("div");
+    body.className = "bookbody";
+
+    const name = document.createElement("h3");
+    name.textContent = author.pen_name || "Unnamed Author";
+
+    const bio = document.createElement("p");
+    bio.textContent = author.bio || "This author hasn't added a biography yet.";
+
+    body.append(name, bio);
+    card.append(body);
+    grid.append(card);
+  });
 }
 function toggleTheme() {
   document.body.classList.toggle("dark");
