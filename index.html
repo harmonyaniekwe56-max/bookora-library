@@ -413,6 +413,58 @@ body.append(name, bio, viewBooks);
     grid.append(card);
   });
 }
+async function loadAuthorBooks(author) {
+  const panel = document.getElementById("authorBooks");
+  const grid = document.getElementById("authorBookGrid");
+  const heading = document.getElementById("authorBooksTitle");
+
+  panel.classList.remove("hidden");
+  heading.textContent = "Books by " + author.pen_name;
+  grid.textContent = "Loading published books...";
+
+  const { data, error } = await supa
+    .from("books")
+    .select("*")
+    .eq("author_id", author.id)
+    .eq("status", "approved")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Could not load author books:", error);
+    grid.textContent = "Could not load published books.";
+    return;
+  }
+
+  grid.replaceChildren();
+
+  if (!data || data.length === 0) {
+    grid.textContent = "This author has no published books yet.";
+    return;
+  }
+
+  data.forEach(book => {
+    const card = document.createElement("article");
+    card.className = "book";
+
+    const body = document.createElement("div");
+    body.className = "bookbody";
+
+    const title = document.createElement("h3");
+    title.textContent = book.title;
+
+    const genre = document.createElement("p");
+    genre.textContent = book.genre || "Uncategorised";
+
+    const description = document.createElement("p");
+    description.textContent = book.description || "";
+
+    body.append(title, genre, description);
+    card.append(body);
+    grid.append(card);
+  });
+
+  panel.scrollIntoView({ behavior: "smooth" });
+}
 function toggleTheme() {
   document.body.classList.toggle("dark");
   localStorage.setItem(
