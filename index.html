@@ -546,6 +546,26 @@ async function loadPendingBooks() {
     box.append(row);
   });
 }
+async function moderateBook(bookId, status) {
+  if (!supa || !currentUser) return;
+
+  if (status !== "approved" && status !== "rejected") return;
+
+  const { error } = await supa
+    .from("books")
+    .update({ status: status })
+    .eq("id", bookId);
+
+  if (error) {
+    console.error("Could not update book:", error);
+    alert("Could not update this book. Please try again.");
+    return;
+  }
+
+  alert("Book " + status + " successfully!");
+
+  await loadPendingBooks();
+}
 function toggleTheme() {
   document.body.classList.toggle("dark");
   localStorage.setItem(
