@@ -472,39 +472,52 @@ async function loadAuthorBooks(author) {
   });
 
   panel.scrollIntoView({ behavior: "smooth" });
-}async function loadPendingBooks() {
-  const panel = document.getElementById("adminPanel");
-  const container = document.getElementById("pendingBooks");
+}
+async function loadPendingBooks() {
+  if (!supa || !currentUser) return;
 
-  if (!supa) {
-    container.textContent = "Database connection unavailable.";
+  const panel = document.getElementById("adminPanel");
+  const box = document.getElementById("pendingBooks");
+
+  const { data: admin, error: adminError } = await supa
+    .from("bookora_admins")
+    .select("user_id")
+    .eq("user_id", currentUser.id)
+    .maybeSingle();
+
+  if (adminError) {
+    panel.classList.add("hidden");
+    console.error(adminError);
     return;
   }
 
-  container.textContent = "Loading pending submissions...";
+  panel.classList.toggle("hidden", !admin);
+
+  if (!admin) return;
+
+  box.textContent = "Loading pending submissions...";
 
   const { data, error } = await supa
     .from("books")
-    .select("*")
+    .select("id, title, author, genre, description")
     .eq("status", "pending")
     .order("created_at", { ascending: false });
 
+  box.replaceChildren();
+
   if (error) {
-    console.error("Could not load pending books:", error);
-    container.textContent = "Could not load pending submissions.";
+    box.textContent = error.message;
     return;
   }
 
-  container.replaceChildren();
-
   if (!data || data.length === 0) {
-    container.textContent = "There are no pending submissions.";
+    box.textContent = "No pending books.";
     return;
   }
 
   data.forEach(book => {
-    const card = document.createElement("article");
-    card.className = "book";
+    const row = document.createElement("article");
+    row.className = "book";
 
     const title = document.createElement("h3");
     title.textContent = book.title || "Untitled book";
@@ -518,10 +531,21 @@ async function loadAuthorBooks(author) {
     const description = document.createElement("p");
     description.textContent = book.description || "No description provided.";
 
-    card.append(title, author, genre, description);
-    container.append(card);
-  });
+    row.append(title, author, genre, description);
 
+    ["approved", "rejected"].forEach(status => {
+      const button = document.createElement("button");
+      button.className = "secondary";
+      button.textContent = status;
+
+      button.onclick = () => moderateBook(book.id, status);
+
+      row.append(button);
+    });
+
+    box.append(row);
+  });
+}
 function toggleTheme() {
   document.body.classList.toggle("dark");
   localStorage.setItem(
@@ -1204,64 +1228,6 @@ async function loadSharedBooks() {
   ];
 
   renderBooks();
-}
-
-async function loadPendingBooks() {
-  if(!supa||!currentUser) return;
-
-  const panel=document.getElementById("adminPanel");
-  const box=document.getElementById("pendingBooks");
-
-  const {data:admin,error:adminError}=await supa.from("bookora_admins")
-    .select("user_id")
-    .eq("user_id",currentUser.id)
-    .maybeSingle();
-
-  if(adminError) {
-    panel.classList.add("hidden");
-    console.error(adminError);
-    return;
-  }
-
-  panel.classList.toggle("hidden",!admin);
-
-  if(!admin) return;
-
-  const {data,error}=await supa.from("books")
-    .select("id,title,author,genre")
-    .eq("status","pending")
-    .order("created_at",{ascending:true});
-
-  box.replaceChildren();
-
-  if(error) {
-    box.textContent=error.message;
-    return;
-  }
-
-  if(!data?.length) {
-    box.textContent="No pending books.";
-    return;
-  }
-
-  data.forEach(book=>{
-    const row=document.createElement("p");
-
-    row.textContent=
-      `${book.title} — ${book.author} (${book.genre}) `;
-
-    ["approved","rejected"].forEach(status=>{
-      const button=document.createElement("button");
-      button.className="secondary";
-      button.textContent=status;
-
-      button.onclick=()=>moderateBook(book.id,status);
-
-      row.append(button);
-    });
-
-    box.append(row);
-  });
 }
 
 async function moderateBook(id,status) {
