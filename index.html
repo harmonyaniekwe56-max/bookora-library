@@ -468,7 +468,56 @@ async function loadAuthorBooks(author) {
   });
 
   panel.scrollIntoView({ behavior: "smooth" });
-}
+}async function loadPendingBooks() {
+  const panel = document.getElementById("adminPanel");
+  const container = document.getElementById("pendingBooks");
+
+  if (!supa) {
+    container.textContent = "Database connection unavailable.";
+    return;
+  }
+
+  container.textContent = "Loading pending submissions...";
+
+  const { data, error } = await supa
+    .from("books")
+    .select("*")
+    .eq("status", "pending")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Could not load pending books:", error);
+    container.textContent = "Could not load pending submissions.";
+    return;
+  }
+
+  container.replaceChildren();
+
+  if (!data || data.length === 0) {
+    container.textContent = "There are no pending submissions.";
+    return;
+  }
+
+  data.forEach(book => {
+    const card = document.createElement("article");
+    card.className = "book";
+
+    const title = document.createElement("h3");
+    title.textContent = book.title || "Untitled book";
+
+    const author = document.createElement("p");
+    author.textContent = "Author: " + (book.author || "Unknown");
+
+    const genre = document.createElement("p");
+    genre.textContent = "Genre: " + (book.genre || "Uncategorised");
+
+    const description = document.createElement("p");
+    description.textContent = book.description || "No description provided.";
+
+    card.append(title, author, genre, description);
+    container.append(card);
+  });
+
 function toggleTheme() {
   document.body.classList.toggle("dark");
   localStorage.setItem(
