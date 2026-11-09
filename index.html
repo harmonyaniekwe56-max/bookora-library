@@ -346,15 +346,19 @@ function getLocal(key,fallback=[]) {
 function setLocal(key,value) {
   localStorage.setItem(key,JSON.stringify(value));
 }
-function showSection(id) {
-  document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
+async function showSection(id) {
+  document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
   document.getElementById(id).classList.add("active");
-  if(id==="shelf") renderShelf();
-  if(id==="dashboard") renderDashboard();
-  if(id==="authors") loadPublicAuthors();
-  window.scrollTo({top:0,behavior:"smooth"});
-}let publicAuthors = [];
 
+  if (id === "shelf") renderShelf();
+  if (id === "dashboard") {
+    renderDashboard();
+    await checkAdminAccess();
+  }
+  if (id === "authors") loadPublicAuthors();
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
 async function loadPublicAuthors() {
   const grid = document.getElementById("authorGrid");
   grid.textContent = "Loading authors...";
