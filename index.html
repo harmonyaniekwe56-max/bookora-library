@@ -321,21 +321,31 @@ async function testBookoraDatabase() {
   if (!supa) {
     console.error("Bookora database is not connected.");
     return;
-  }window.addEventListener("load", () => {
-  testBookoraDatabase();
-});
+  }
+  async function testBookoraDatabase() {
+  if (!supa) {
+    console.error("Bookora database is not connected.");
+    return;
+  }
+
   const { data, error } = await supa
     .from("books")
     .select("id, title, genre, status")
     .limit(5);
+
   if (error) {
     console.error("Database connection error:", error.message);
     alert("Database error: " + error.message);
     return;
   }
+
   console.log("Bookora database connected successfully!");
   console.log("Available books:", data);
 }
+
+window.addEventListener("load", () => {
+  testBookoraDatabase();
+});
 function getLocal(key,fallback=[]) {
   try {
     return JSON.parse(localStorage.getItem(key)) || fallback;
