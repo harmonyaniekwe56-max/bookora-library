@@ -322,11 +322,6 @@ async function testBookoraDatabase() {
     console.error("Bookora database is not connected.");
     return;
   }
-  async function testBookoraDatabase() {
-  if (!supa) {
-    console.error("Bookora database is not connected.");
-    return;
-  }
 
   const { data, error } = await supa
     .from("books")
@@ -335,7 +330,6 @@ async function testBookoraDatabase() {
 
   if (error) {
     console.error("Database connection error:", error.message);
-    alert("Database error: " + error.message);
     return;
   }
 
