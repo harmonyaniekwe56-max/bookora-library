@@ -718,6 +718,26 @@ function toggleFavourite(id) {
   renderShelf();
 }
 
+function showBookDetails(book) {
+  const details = document.getElementById("bookDetails");
+
+  if (!details) {
+    console.error("Book details section not found.");
+    return;
+  }
+
+  details.innerHTML = `
+    <h2>${book.title}</h2>
+    <p>By ${book.author || "Unknown Author"}</p>
+    <p>Genre: ${book.genre || "Unspecified"}</p>
+    <p>${book.description || "No description available."}</p>
+    <button onclick="readBook('${book.id}')">Read Book</button>
+    <button onclick="showSection('discover')">Back to Discover</button>
+  `;
+
+  showSection("bookDetails");
+}
+
 function renderShelf() {
   const shelf=document.getElementById("shelfGrid");
   const fav=document.getElementById("favGrid");
