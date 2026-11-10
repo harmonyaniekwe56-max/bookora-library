@@ -1257,6 +1257,26 @@ function updateAuthUI() {
     document.getElementById("adminPanel").classList.add("hidden");
   }
 }
+async function readSharedBookById(bookId) {
+  const { data, error } = await supa
+    .from("books")
+    .select("*")
+    .eq("id", bookId)
+    .single();
+
+  if (error || !data) {
+    console.error("Could not find book:", error);
+    alert("Could not find this book.");
+    return;
+  }
+
+  showSection("reader");
+  await readSharedBook(data);
+}
+
+  showSection("reader");
+  await readSharedBook(data);
+}
 
 async function loadSharedBooks() {
   if(!supa) return;
@@ -1291,26 +1311,6 @@ async function loadSharedBooks() {
   renderBooks();
 }
 
-async function moderateBook(id,status) {
-  if(!supa||!currentUser) return;
-
-  const {error}=await supa.from("books")
-    .update({status})
-    .eq("id",id);
-
-  alert(error?error.message:"Book status updated.");
-
-  await loadPendingBooks();
-  await loadSharedBooks();
-}
-
-if(supa) {
-  supa.auth.getUser().then(({data,error})=>{
-    if(error) {
-      console.error(error);
-      return;
-    }
-
     currentUser=data.user;
     updateAuthUI();
     loadSharedBooks();
@@ -1321,9 +1321,7 @@ if(supa) {
     updateAuthUI();
   });
 
-  document.getElementById("modeNotice").textContent=
-    "Shared mode is configured. Approved community books load from the database.";
-}
+  document.get
 
 fillGenres();
 
