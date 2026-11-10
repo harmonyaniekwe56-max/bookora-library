@@ -1270,14 +1270,9 @@ async function readSharedBookById(bookId) {
     return;
   }
 
-  showSection("reader");
+  showSection("readerSection");
   await readSharedBook(data);
 }
-
-  showSection("reader");
-  await readSharedBook(data);
-}
-
 async function loadSharedBooks() {
   if(!supa) return;
 
