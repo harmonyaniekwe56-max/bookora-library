@@ -637,7 +637,6 @@ function makeBookCard(book) {
   const read=document.createElement("button");
   read.textContent="Read Details";
   read.onclick = () => showBookDetails(book);
-  read.onclick=()=>openBook(book.id);
   actions.append(save,fav,read);
   body.append(title,author,genre,desc,actions);
   card.append(cover,body);
