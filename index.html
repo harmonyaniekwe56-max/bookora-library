@@ -1306,17 +1306,16 @@ async function loadSharedBooks() {
   renderBooks();
 }
 
-    currentUser=data.user;
+if (supa) {
+  supa.auth.onAuthStateChange((_event, session) => {
+    currentUser = session?.user || null;
     updateAuthUI();
-    loadSharedBooks();
-  });
 
-  supa.auth.onAuthStateChange((_event,session)=>{
-    currentUser=session?.user||null;
-    updateAuthUI();
+    if (currentUser) {
+      loadSharedBooks();
+    }
   });
-
-  document.get
+}
 
 fillGenres();
 
