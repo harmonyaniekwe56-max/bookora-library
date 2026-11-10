@@ -1272,37 +1272,27 @@ async function readSharedBookById(bookId) {
   showSection("readerSection");
   await readSharedBook(data);
 }
-async function loadSharedBooks() {
-  if(!supa) return;
 
-  const {data,error}=await supa.from("books")
-    .select("id,title,author,genre,description,cover_path,file_path,file_name,created_at")
-    .eq("status","approved")
-    .order("created_at",{ascending:false});
+async function readSharedBookById(bookId) {
+  const { data, error } = await supa
+    .from("books")
+    .select("*")
+    .eq("id", bookId)
+    .single();
 
-  if(error) {
-    console.error(error);
-    document.getElementById("modeNotice").textContent=
-      "Could not load shared books: "+error.message;
+  if (error || !data) {
+    console.error("Could not find book:", error);
+    alert("Could not find this book.");
     return;
   }
 
-  const shared=(data||[]).map(book=>({
-    ...book,
-    pen_name:book.author,
-    cover_url:book.cover_path
-      ? supa.storage.from("bookora-covers")
-          .getPublicUrl(book.cover_path).data.publicUrl
-      : null
-  }));
+  activeReaderBookId = String(data.id);
+  document.getElementById("readerTitle").textContent = data.title;
 
-  books=[
-    ...samples,
-    ...getLocal("bookora-local-books"),
-    ...shared
-  ];
+  loadReaderActivity();
 
-  renderBooks();
+  showSection("readerSection");
+  await readSharedBook(data);
 }
 
 if (supa) {
