@@ -719,7 +719,7 @@ function toggleFavourite(id) {
 }
 
 function showBookDetails(book) {
-  const details = document.getElementById("bookDetails");
+const details = document.getElementById("bookDetailsContent");
 
   if (!details) {
     console.error("Book details section not found.");
@@ -735,7 +735,7 @@ function showBookDetails(book) {
     <button onclick="showSection('discover')">Back to Discover</button>
   `;
 
-  showSection("bookDetails");
+  showSection("bookDetailsContent");
 }
 
 function renderShelf() {
