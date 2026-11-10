@@ -639,10 +639,10 @@ function renderBooks() {
   const q=document.getElementById("search").value.toLowerCase();
   const genre=document.getElementById("genreFilter").value;
   const sort=document.getElementById("sortFilter").value;
-  let list=books.filter(b=>
-    (!q||(b.title+" "+(b.pen_name||b.author||"")).toLowerCase()) &&
-    (!genre||b.genre===genre)
-  );
+  let list = books.filter(b =>
+  (!q || (b.title + " " + (b.pen_name || b.author || "")).toLowerCase().includes(q)) &&
+  (!genre || b.genre === genre)
+);
   if(sort==="az") {
     list.sort((a,b)=>a.title.localeCompare(b.title));
   } else {
