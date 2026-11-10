@@ -740,7 +740,9 @@ const details = document.getElementById("bookDetailsContent");
     <p>By ${book.author || "Unknown Author"}</p>
     <p>Genre: ${book.genre || "Unspecified"}</p>
     <p>${book.description || "No description available."}</p>
-    <button onclick="readBook('${book.id}')">Read Book</button>
+    <button onclick="readSharedBookById('${book.id}')">
+  Read Book
+</button>
     <button onclick="showSection('discover')">Back to Discover</button>
   `;
 
