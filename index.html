@@ -1777,22 +1777,36 @@ async function publishChapter(chapterId) {
 
   if (!confirmed) return;
 
-  const { error } = await supa
+const editingId = document.getElementById("editingChapterId").value;
+
+let result;
+
+if (editingId) {
+  result = await supa
     .from("book_chapters")
-    .update({ status: "published" })
-    .eq("id", chapterId)
+    .update({
+      chapter_number: chapterNumber,
+      title: title,
+      content: content,
+      status: status,
+      updated_at: new Date().toISOString()
+    })
+    .eq("id", editingId)
     .eq("author_id", currentUser.id);
-
-  if (error) {
-    console.error("Chapter publishing error:", error.message);
-    alert("Could not publish chapter: " + error.message);
-    return;
-  }
-
-  alert("Chapter published successfully!");
-
-  await loadChapters();
+} else {
+  result = await supa
+    .from("book_chapters")
+    .insert({
+      book_id: bookId,
+      author_id: currentUser.id,
+      chapter_number: chapterNumber,
+      title: title,
+      content: content,
+      status: status
+    });
 }
+
+const { error } = result;
 async function editChapter(chapterId) {
   const { data, error } = await supa
     .from("book_chapters")
