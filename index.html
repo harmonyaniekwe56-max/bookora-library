@@ -1178,7 +1178,15 @@ function renderComments() {
 }
 function postComment() {
   if (!activeReaderBookId) return;
+const isDatabaseBookId =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+    String(activeReaderBookId)
+  );
 
+if (!isDatabaseBookId) {
+  alert("Shared reviews are available for books published through Bookora, not demo books.");
+  return;
+}
   const text = document.getElementById("commentText").value.trim();
 
   if (!text) {
