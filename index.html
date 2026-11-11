@@ -1881,7 +1881,7 @@ async function saveChapter(status) {
     status === "published"
       ? "Chapter published successfully!"
       : "Chapter saved as a draft!";
-
+  document.getElementById("editingChapterId").value = "";
   document.getElementById("chapterNumber").value = "";
   document.getElementById("chapterTitle").value = "";
   document.getElementById("chapterContent").value = "";
