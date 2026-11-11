@@ -508,6 +508,7 @@ async function showSection(id) {
   renderDashboard();
   await checkAdminAccess();
   await updateWriterMilestones();
+  await loadChapterBooks();
 }
   if (id === "authors") loadPublicAuthors();
 
