@@ -34,7 +34,12 @@ h2{font:700 26px 'Playfair Display';margin:8px 0 16px}
 .section{display:none}
 .section.active{display:block}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:20px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+  align-items: start;
+}
 .book{background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column}
 .cover{height:180px;background:linear-gradient(135deg,#e8d8f7,#b99ad8);display:grid;place-items:center;color:#553576;font:700 22px 'Playfair Display';text-align:center;padding:15px}
 .cover img{width:100%;height:100%;object-fit:cover}
