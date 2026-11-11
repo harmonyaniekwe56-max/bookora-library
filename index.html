@@ -1444,7 +1444,6 @@ async function updateWriterMilestones() {
     .select("id")
     .eq("id", currentUser.id)
     .maybeSingle();
-
   const publishedBooks = (books || []).filter(
     book => book.status === "approved"
   );
