@@ -1691,9 +1691,10 @@ document.getElementById("earnedAchievementCount").textContent =
 }
 async function loadChapters() {
   const bookId = document.getElementById("chapterBookSelect").value;
-const list = document.getElementById("chapterList");
+  const list = document.getElementById("chapterList");
 
-list.replaceChildren();
+  list.replaceChildren();
+
   if (!bookId) {
     list.textContent = "Choose a book to list its chapters.";
     return;
@@ -1717,12 +1718,25 @@ list.replaceChildren();
   }
 
   data.forEach(chapter => {
-    const item = document.createElement("p");
+    const item = document.createElement("div");
 
-    item.textContent =
+    const heading = document.createElement("p");
+    heading.textContent =
       "Chapter " + chapter.chapter_number +
       ": " + chapter.title +
       " (" + chapter.status + ")";
+
+    item.append(heading);
+
+    if (chapter.status === "draft") {
+      const button = document.createElement("button");
+
+      button.textContent = "Publish Draft";
+      button.type = "button";
+      button.onclick = () => publishChapter(chapter.id);
+
+      item.append(button);
+    }
 
     list.append(item);
   });
