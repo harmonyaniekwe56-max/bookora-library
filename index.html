@@ -1425,6 +1425,51 @@ books=[
 loadApprovedBooks();
 renderBooks();
 renderDashboard();
+
+async function updateWriterMilestones() {
+  if (!supa || !currentUser) return;
+
+  const { data: books, error } = await supa
+    .from("books")
+    .select("id, status")
+    .eq("author_id", currentUser.id);
+
+  if (error) {
+    console.error("Could not load writing milestones:", error.message);
+    return;
+  }
+
+  const { data: profile } = await supa
+    .from("profiles")
+    .select("id")
+    .eq("id", currentUser.id)
+    .maybeSingle();
+
+  const publishedBooks = (books || []).filter(
+    book => book.status === "approved"
+  );
+
+  const milestones = [
+    {
+      name: "Complete your author profile",
+      completed: !!profile
+    },
+    {
+      name: "Submit your first book",
+      completed: (books || []).length > 0
+    },
+    {
+      name: "Publish your first book",
+      completed: publishedBooks.length > 0
+    }
+  ];
+
+  document.getElementById("writerMilestones").innerHTML =
+    milestones.map(item => `
+      <p>${item.completed ? "✅" : "🔒"} ${item.name}</p>
+    `).join("");
+}
+
 </script>
 </body>
 </html>
