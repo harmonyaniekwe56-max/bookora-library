@@ -1727,10 +1727,35 @@ async function loadChapters() {
       " (" + chapter.status + ")";
 
     item.append(heading);
+data.forEach(chapter => {
+  const item = document.createElement("div");
 
-    if (chapter.status === "draft") {
-      const button = document.createElement("button");
+  const heading = document.createElement("p");
+  heading.textContent =
+    "Chapter " + chapter.chapter_number +
+    ": " + chapter.title +
+    " (" + chapter.status + ")";
 
+  item.append(heading);
+
+  const editButton = document.createElement("button");
+  editButton.textContent = "Edit Chapter";
+  editButton.type = "button";
+  editButton.onclick = () => editChapter(chapter.id);
+
+  item.append(editButton);
+
+  if (chapter.status === "draft") {
+    const publishButton = document.createElement("button");
+    publishButton.textContent = "Publish Draft";
+    publishButton.type = "button";
+    publishButton.onclick = () => publishChapter(chapter.id);
+
+    item.append(publishButton);
+  }
+
+  list.append(item);
+});
       button.textContent = "Publish Draft";
       button.type = "button";
       button.onclick = () => publishChapter(chapter.id);
