@@ -1127,6 +1127,15 @@ async function renderReviews() {
   list.replaceChildren();
 
   if (!supa || !currentUser) {
+  const isDatabaseBookId =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+    String(activeReaderBookId)
+  );
+
+if (!isDatabaseBookId) {
+  list.textContent = "Shared reviews are available for books published through Bookora.";
+  return;
+}
     const reviews = getLocal("bookora-reviews", {});
     const entries = reviews[activeReaderBookId] || [];
 
