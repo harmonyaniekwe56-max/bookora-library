@@ -1741,6 +1741,32 @@ async function loadChapters() {
     list.append(item);
   });
 }
+async function publishChapter(chapterId) {
+  if (!supa || !currentUser) {
+    alert("Please log in first.");
+    return;
+  }
+
+  const confirmed = confirm("Are you sure you want to publish this chapter?");
+
+  if (!confirmed) return;
+
+  const { error } = await supa
+    .from("book_chapters")
+    .update({ status: "published" })
+    .eq("id", chapterId)
+    .eq("author_id", currentUser.id);
+
+  if (error) {
+    console.error("Chapter publishing error:", error.message);
+    alert("Could not publish chapter: " + error.message);
+    return;
+  }
+
+  alert("Chapter published successfully!");
+
+  await loadChapters();
+}
 async function saveChapter(status) {
   const bookId = document.getElementById("chapterBookSelect").value;
   const chapterNumber = Number(
