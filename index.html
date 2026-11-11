@@ -1660,6 +1660,45 @@ document.getElementById("earnedAchievementCount").textContent =
       <p>${earnedKeys.has(item.key) ? "🏆" : "🔒"} ${item.name}</p>
     `).join("");
 }
+async function loadChapters() {
+  const bookId = document.getElementById("chapterBookSelect").value;
+  const manager = document.getElementById("chapterManager");
+
+  manager.replaceChildren();
+
+  if (!bookId) {
+    manager.textContent = "Choose a book to manage its chapters.";
+    return;
+  }
+
+  const { data, error } = await supa
+    .from("book_chapters")
+    .select("id, chapter_number, title, status")
+    .eq("book_id", bookId)
+    .order("chapter_number", { ascending: true });
+
+  if (error) {
+    console.error("Chapter loading error:", error.message);
+    manager.textContent = "Could not load chapters.";
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    manager.textContent = "No chapters added yet.";
+    return;
+  }
+
+  data.forEach(chapter => {
+    const item = document.createElement("p");
+
+    item.textContent =
+      "Chapter " + chapter.chapter_number +
+      ": " + chapter.title +
+      " (" + chapter.status + ")";
+
+    manager.append(item);
+  });
+}
 
 </script>
 </body>
