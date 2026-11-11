@@ -475,11 +475,11 @@ async function showSection(id) {
   document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
   document.getElementById(id).classList.add("active");
 
-  if (id === "shelf") renderShelf();
   if (id === "dashboard") {
-    renderDashboard();
-    await checkAdminAccess();
-  }
+  renderDashboard();
+  await checkAdminAccess();
+  await updateWriterMilestones();
+}
   if (id === "authors") loadPublicAuthors();
 
   window.scrollTo({ top: 0, behavior: "smooth" });
