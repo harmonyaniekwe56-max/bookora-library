@@ -1079,18 +1079,87 @@ function loadReaderActivity() {
   renderComments();
 }
 
-function renderReviews() {
+async function postReview() {
+  if (!activeReaderBookId) return;
+
+  if (!supa || !currentUser) {
+    alert("Please log in to post a shared review.");
+    return;
+  }
+
+  const text = document.getElementById("reviewText").value.trim();
+  const rating = Number(document.getElementById("reviewRating").value);
+
+  if (!text) {
+    alert("Please write a review first.");
+    return;
+  }
+
+  if (rating < 1 || rating > 5) {
+    alert("Please select a valid rating.");
+    return;
+  }
+
+  const { error } = await supa
+    .from("book_reviews")
+    .insert({
+      book_id: activeReaderBookId,
+      reviewer_id: currentUser.id,
+      rating: rating,
+      review_text: text
+    });
+
+  if (error) {
+    console.error("Review saving error:", error.message);
+    alert("Could not save your review: " + error.message);
+    return;
+  }
+
+  document.getElementById("reviewText").value = "";
+  await renderReviews();
+
+  alert("Your review has been posted!");
+}
+
+async function renderReviews() {
   const list = document.getElementById("reviewList");
   list.replaceChildren();
 
-  const reviews = getLocal("bookora-reviews", {});
-  const entries = reviews[activeReaderBookId] || [];
+  if (!supa || !currentUser) {
+    const reviews = getLocal("bookora-reviews", {});
+    const entries = reviews[activeReaderBookId] || [];
 
-  entries.forEach(review => {
+    entries.forEach(review => {
+      const item = document.createElement("p");
+      item.textContent = "★".repeat(review.rating) + " — " + review.text;
+      list.append(item);
+    });
+
+    return;
+  }
+
+  const { data, error } = await supa
+    .from("book_reviews")
+    .select("rating, review_text, created_at")
+    .eq("book_id", activeReaderBookId)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Review loading error:", error.message);
+    list.textContent = "Could not load reviews.";
+    return;
+  }
+
+  (data || []).forEach(review => {
     const item = document.createElement("p");
-    item.textContent = "★".repeat(review.rating) + " — " + review.text;
+    item.textContent =
+      "★".repeat(review.rating) + " — " + review.review_text;
     list.append(item);
   });
+
+  if (!data || data.length === 0) {
+    list.textContent = "No reviews yet. Be the first to review!";
+  }
 }
 
 function renderComments() {
@@ -1106,32 +1175,6 @@ function renderComments() {
     list.append(item);
   });
 }
-
-function postReview() {
-  if (!activeReaderBookId) return;
-
-  const text = document.getElementById("reviewText").value.trim();
-  const rating = Number(document.getElementById("reviewRating").value);
-
-  if (!text) {
-    alert("Please write a review first.");
-    return;
-  }
-
-  const reviews = getLocal("bookora-reviews", {});
-
-  if (!reviews[activeReaderBookId]) {
-    reviews[activeReaderBookId] = [];
-  }
-
-  reviews[activeReaderBookId].push({ rating, text });
-
-  setLocal("bookora-reviews", reviews);
-  document.getElementById("reviewText").value = "";
-
-  renderReviews();
-}
-
 function postComment() {
   if (!activeReaderBookId) return;
 
