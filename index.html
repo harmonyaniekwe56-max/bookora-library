@@ -1463,6 +1463,10 @@ async function updateWriterMilestones() {
     .eq("id", currentUser.id)
     .maybeSingle();
 
+  if (!profile) {
+    console.log("Author profile not completed yet.");
+  }
+
   const publishedBooks = (books || []).filter(
     book => book.status === "approved"
   );
@@ -1489,22 +1493,62 @@ async function updateWriterMilestones() {
 
   const achievements = [
     {
+      key: "first_steps",
       name: "First Steps",
       earned: (books || []).length >= 1
     },
     {
+      key: "published_author",
       name: "Published Author",
       earned: publishedBooks.length >= 1
     },
     {
+      key: "growing_writer",
       name: "Growing Writer",
       earned: publishedBooks.length >= 3
     }
   ];
 
+  const earnedAchievements = achievements.filter(
+    item => item.earned
+  );
+
+  if (earnedAchievements.length > 0) {
+    const { error: saveError } = await supa
+      .from("author_achievements")
+      .upsert(
+        earnedAchievements.map(item => ({
+          author_id: currentUser.id,
+          achievement_key: item.key
+        })),
+        {
+          onConflict: "author_id,achievement_key",
+          ignoreDuplicates: true
+        }
+      );
+
+    if (saveError) {
+      console.error("Achievement saving error:", saveError.message);
+    }
+  }
+
+  const { data: savedAchievements, error: loadError } = await supa
+    .from("author_achievements")
+    .select("achievement_key")
+    .eq("author_id", currentUser.id);
+
+  if (loadError) {
+    console.error("Achievement loading error:", loadError.message);
+    return;
+  }
+
+  const earnedKeys = new Set(
+    (savedAchievements || []).map(item => item.achievement_key)
+  );
+
   document.getElementById("authorAchievements").innerHTML =
     achievements.map(item => `
-      <p>${item.earned ? "🏆" : "🔒"} ${item.name}</p>
+      <p>${earnedKeys.has(item.key) ? "🏆" : "🔒"} ${item.name}</p>
     `).join("");
 }
 
