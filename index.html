@@ -1691,10 +1691,9 @@ document.getElementById("earnedAchievementCount").textContent =
 }
 async function loadChapters() {
   const bookId = document.getElementById("chapterBookSelect").value;
-  const manager = document.getElementById("chapterManager");
+const list = document.getElementById("chapterList");
 
-  manager.replaceChildren();
-
+list.replaceChildren();
   if (!bookId) {
     manager.textContent = "Choose a book to manage its chapters.";
     return;
