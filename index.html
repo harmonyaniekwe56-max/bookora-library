@@ -1727,7 +1727,65 @@ list.replaceChildren();
     list.append(item);
   });
 }
+async function saveChapter(status) {
+  const bookId = document.getElementById("chapterBookSelect").value;
+  const chapterNumber = Number(
+    document.getElementById("chapterNumber").value
+  );
+  const title = document.getElementById("chapterTitle").value.trim();
+  const content = document.getElementById("chapterContent").value.trim();
+  const message = document.getElementById("chapterMessage");
 
+  if (!supa || !currentUser) {
+    message.textContent = "Please log in first.";
+    return;
+  }
+
+  if (!bookId) {
+    message.textContent = "Please select a book.";
+    return;
+  }
+
+  if (!Number.isInteger(chapterNumber) || chapterNumber < 1) {
+    message.textContent = "Enter a valid chapter number.";
+    return;
+  }
+
+  if (!title || !content) {
+    message.textContent = "Please enter the chapter title and content.";
+    return;
+  }
+
+  message.textContent = "Saving chapter...";
+
+  const { error } = await supa
+    .from("book_chapters")
+    .insert({
+      book_id: bookId,
+      author_id: currentUser.id,
+      chapter_number: chapterNumber,
+      title: title,
+      content: content,
+      status: status
+    });
+
+  if (error) {
+    console.error("Chapter saving error:", error.message);
+    message.textContent = "Could not save chapter: " + error.message;
+    return;
+  }
+
+  message.textContent =
+    status === "published"
+      ? "Chapter published successfully!"
+      : "Chapter saved as a draft!";
+
+  document.getElementById("chapterNumber").value = "";
+  document.getElementById("chapterTitle").value = "";
+  document.getElementById("chapterContent").value = "";
+
+  await loadChapters();
+}
 </script>
 </body>
 </html>
