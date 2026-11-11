@@ -1066,7 +1066,8 @@ document.getElementById("bookForm").addEventListener("submit", async event => {
 });
 let activeReaderBookId = null;
 
-function loadReaderActivity() {
+
+async function loadReaderActivity() {
   if (!activeReaderBookId) return;
 
   const progress = getLocal("bookora-progress", {});
@@ -1075,7 +1076,7 @@ function loadReaderActivity() {
   document.getElementById("readingProgress").value = value;
   document.getElementById("progressValue").textContent = value;
 
-  renderReviews();
+  await renderReviews();
   renderComments();
 }
 
