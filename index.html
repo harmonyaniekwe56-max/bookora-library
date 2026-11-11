@@ -1695,7 +1695,7 @@ const list = document.getElementById("chapterList");
 
 list.replaceChildren();
   if (!bookId) {
-    manager.textContent = "Choose a book to manage its chapters.";
+    list.textContent = "Choose a book to list its chapters.";
     return;
   }
 
@@ -1707,12 +1707,12 @@ list.replaceChildren();
 
   if (error) {
     console.error("Chapter loading error:", error.message);
-    manager.textContent = "Could not load chapters.";
+    list.textContent = "Could not load chapters.";
     return;
   }
 
   if (!data || data.length === 0) {
-    manager.textContent = "No chapters added yet.";
+    list.textContent = "No chapters added yet.";
     return;
   }
 
@@ -1724,7 +1724,7 @@ list.replaceChildren();
       ": " + chapter.title +
       " (" + chapter.status + ")";
 
-    manager.append(item);
+    list.append(item);
   });
 }
 
