@@ -369,9 +369,38 @@ main {
     <option value="">Select a book</option>
   </select>
 
-  <div id="chapterManager">
-    <p class="muted">Choose a book to manage its chapters.</p>
-  </div>
+<div id="chapterManager">
+  <h4>Add a New Chapter</h4>
+
+  <label for="chapterNumber">Chapter number</label>
+  <input id="chapterNumber" type="number" min="1" required>
+
+  <label for="chapterTitle">Chapter title</label>
+  <input id="chapterTitle" maxlength="150" required>
+
+  <label for="chapterContent">Chapter content</label>
+  <textarea
+    id="chapterContent"
+    rows="12"
+    placeholder="Write your chapter here..."
+    required
+  ></textarea>
+
+  <button type="button" onclick="saveChapter('draft')">
+    Save Draft
+  </button>
+
+  <button type="button" onclick="saveChapter('published')">
+    Publish Chapter
+  </button>
+
+  <div id="chapterMessage" role="status"></div>
+
+  <hr>
+
+  <h4>My Chapters</h4>
+  <div id="chapterList"></div>
+</div>
 </div>
   <div id="adminPanel" class="panel hidden">
     <h3>Pending submissions (admin)</h3>
