@@ -1444,50 +1444,52 @@ async function updateWriterMilestones() {
     .select("id")
     .eq("id", currentUser.id)
     .maybeSingle();
+
   const publishedBooks = (books || []).filter(
     book => book.status === "approved"
   );
 
-  .join("");
+  const milestones = [
+    {
+      name: "Complete your author profile",
+      completed: !!profile
+    },
+    {
+      name: "Submit your first book",
+      completed: (books || []).length >= 1
+    },
+    {
+      name: "Publish your first book",
+      completed: publishedBooks.length >= 1
+    }
+  ];
 
-const achievements = [
-  {
-    name: "First Steps",
-    earned: (books || []).length >= 1
-  },
-  {
-    name: "Published Author",
-    earned: publishedBooks.length >= 1
-  },
-  {
-    name: "Growing Writer",
-    earned: publishedBooks.length >= 3
-  }
-];
-document.getElementById("writerMilestones").innerHTML =
-  milestones.map(item => `
-    <p>${item.completed ? "✅" : "🔒"} ${item.name}</p>
-  `).join("");
+  document.getElementById("writerMilestones").innerHTML =
+    milestones.map(item => `
+      <p>${item.completed ? "✅" : "🔒"} ${item.name}</p>
+    `).join("");
 
-const achievements = [
-  {
-    name: "First Steps",
-    earned: (books || []).length >= 1
-  },
-  {
-    name: "Published Author",
-    earned: publishedBooks.length >= 1
-  },
-  {
-    name: "Growing Writer",
-    earned: publishedBooks.length >= 3
-  }
-];
+  const achievements = [
+    {
+      name: "First Steps",
+      earned: (books || []).length >= 1
+    },
+    {
+      name: "Published Author",
+      earned: publishedBooks.length >= 1
+    },
+    {
+      name: "Growing Writer",
+      earned: publishedBooks.length >= 3
+    }
+  ];
 
-document.getElementById("authorAchievements").innerHTML =
-  achievements.map(item => `
-    <p>${item.earned ? "🏆" : "🔒"} ${item.name}</p>
-  `).join("");
+  document.getElementById("authorAchievements").innerHTML =
+    achievements.map(item => `
+      <p>${item.earned ? "🏆" : "🔒"} ${item.name}</p>
+    `).join("");
+}
+
 </script>
 </body>
 </html>
