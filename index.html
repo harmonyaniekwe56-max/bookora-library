@@ -1539,9 +1539,14 @@ async function updateWriterMilestones() {
     return;
   }
 
-  const earnedKeys = new Set(
-    (savedAchievements || []).map(item => item.achievement_key)
-  );
+document.getElementById("submittedBookCount").textContent =
+  (books || []).length;
+
+document.getElementById("publishedBookCount").textContent =
+  publishedBooks.length;
+
+document.getElementById("earnedAchievementCount").textContent =
+  earnedKeys.size;
 
   document.getElementById("authorAchievements").innerHTML =
     achievements.map(item => `
