@@ -1971,7 +1971,100 @@ function cancelChapterEdit() {
     "Editing cancelled. You can start a new chapter.";
 
 }
+// ======================================
+// BOOKORA READER CHAPTER SYSTEM
+// ======================================
 
+let readerChapters = [];
+let currentReaderChapterIndex = 0;
+
+
+// 1. LOAD PUBLISHED CHAPTERS
+async function loadReaderChapters(bookId) {
+  const list = document.getElementById("readerChapterList");
+  const readingArea = document.getElementById("chapterReadingArea");
+
+  list.textContent = "Loading chapters...";
+  readingArea.classList.add("hidden");
+
+  if (!supa || !bookId) {
+    list.textContent = "Chapters are unavailable.";
+    return;
+  }
+
+  const { data, error } = await supa
+    .from("book_chapters")
+    .select("id, chapter_number, title, content")
+    .eq("book_id", bookId)
+    .eq("status", "published")
+    .order("chapter_number", { ascending: true });
+
+  if (error) {
+    console.error("Reader chapter error:", error.message);
+    list.textContent = "Could not load chapters.";
+    return;
+  }
+
+  readerChapters = data || [];
+
+  if (readerChapters.length === 0) {
+    list.textContent = "No published chapters yet.";
+    return;
+  }
+
+  list.replaceChildren();
+
+  readerChapters.forEach((chapter, index) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent =
+      "Chapter " + chapter.chapter_number + ": " + chapter.title;
+
+    button.onclick = () => openReaderChapter(index);
+
+    list.append(button);
+  });
+}
+
+
+// 2. OPEN A CHAPTER
+function openReaderChapter(index) {
+  if (index < 0 || index >= readerChapters.length) return;
+
+  currentReaderChapterIndex = index;
+
+  const chapter = readerChapters[index];
+
+  document.getElementById("readingChapterTitle").textContent =
+    "Chapter " + chapter.chapter_number + ": " + chapter.title;
+
+  document.getElementById("readingChapterContent").textContent =
+    chapter.content;
+
+  document.getElementById("chapterReadingArea").classList.remove("hidden");
+
+  updateReaderChapterButtons();
+}
+
+
+// 3. PREVIOUS AND NEXT CHAPTERS
+function changeReaderChapter(direction) {
+  const nextIndex = currentReaderChapterIndex + direction;
+
+  if (nextIndex < 0 || nextIndex >= readerChapters.length) return;
+
+  openReaderChapter(nextIndex);
+}
+
+
+// 4. UPDATE NAVIGATION BUTTONS
+function updateReaderChapterButtons() {
+  document.getElementById("previousChapterBtn").disabled =
+    currentReaderChapterIndex === 0;
+
+  document.getElementById("nextChapterBtn").disabled =
+    currentReaderChapterIndex === readerChapters.length - 1;
+}
 </script>
 </body>
 </html>
