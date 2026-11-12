@@ -227,35 +227,59 @@ main {
   <h2>Submit Your Book</h2>
   <div class="panel">
     <div class="notice">In demo mode, submissions are saved only in this browser. In shared mode, they go to the library for moderator review. Only submit writing you own or have permission to share.</div>
-    <form id="bookForm" class="formgrid">
-      <div>
-        <label for="bookTitle">Book title</label>
-        <input id="bookTitle" required maxlength="120">
-      </div>
-      <div>
-        <label for="penName">Author / pen name</label>
-        <input id="penName" required maxlength="80">
-      </div>
-      <div>
-        <label for="bookGenre">Genre</label>
-        <select id="bookGenre" required></select>
-      </div>
-      <div>
-        <label for="bookCover">Cover image (optional)</label>
-        <input id="bookCover" type="file" accept="image/png,image/jpeg,image/webp">
-      </div>
-      <div class="full">
-        <label for="bookDescription">Description</label>
-        <textarea id="bookDescription" maxlength="1500" required></textarea>
-      </div>
-      <div class="full">
-        <label for="bookFile">Book file (PDF, TXT or EPUB; max 10 MB)</label>
-        <input id="bookFile" type="file" accept=".pdf,.txt,.epub,application/pdf,text/plain,application/epub+zip" required>
-      </div>
-      <div class="full">
-        <button type="submit">Send for Review</button>
-      </div>
-    </form>
+
+<form id="bookForm" class="formgrid">
+  <div>
+    <label for="bookTitle">Book title</label>
+    <input id="bookTitle" required maxlength="120">
+  </div>
+
+  <div>
+    <label for="penName">Author / pen name</label>
+    <input id="penName" required maxlength="80">
+  </div>
+
+  <div>
+    <label for="bookGenre">Genre</label>
+    <select id="bookGenre" required></select>
+  </div>
+
+  <div>
+    <label for="publishingMethod">Publishing method</label>
+    <select id="publishingMethod" required>
+      <option value="complete">Complete Book</option>
+      <option value="serial">Chapter-by-Chapter</option>
+    </select>
+  </div>
+
+  <div>
+    <label for="bookCover">Book cover image (optional)</label>
+    <input
+      id="bookCover"
+      type="file"
+      accept="image/png,image/jpeg,image/webp"
+    >
+  </div>
+
+  <div class="full">
+    <label for="bookDescription">Description</label>
+    <textarea id="bookDescription" maxlength="1500" required></textarea>
+  </div>
+
+  <div class="full" id="bookFileGroup">
+    <label for="bookFile">Complete book file (PDF, TXT or EPUB; max 10 MB)</label>
+    <input
+      id="bookFile"
+      type="file"
+      accept=".pdf,.txt,.epub,application/pdf,text/plain,application/epub+zip"
+    >
+  </div>
+
+  <div class="full">
+    <button type="submit">Send for Review</button>
+  </div>
+</form>
+
     <p id="submitMessage" role="status"></p>
   </div>
 </section>
