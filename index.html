@@ -418,6 +418,31 @@ main {
       Choose a book to read.
     </div>
     <hr>
+
+<h3>Chapters</h3>
+
+<div id="readerChapterList">
+  Select a book to see its published chapters.
+</div>
+
+<div id="chapterReadingArea" class="panel hidden">
+  <h3 id="readingChapterTitle"></h3>
+
+  <div id="readingChapterContent" class="reader"></div>
+
+  <div class="row">
+    <button type="button" id="previousChapterBtn"
+      onclick="changeReaderChapter(-1)">
+      Previous Chapter
+    </button>
+
+    <button type="button" id="nextChapterBtn"
+      onclick="changeReaderChapter(1)">
+      Next Chapter
+    </button>
+  </div>
+</div>
+    <hr>
     <h3>Reading Progress</h3>
     <label for="readingProgress">How far have you read?</label>
     <input type="range" id="readingProgress" min="0" max="100" value="0">
