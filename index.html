@@ -1008,21 +1008,56 @@ function toggleFavourite(id) {
 }
 
 function showBookDetails(book) {
-const details = document.getElementById("bookDetailsContent");
+  const details = document.getElementById("bookDetailsContent");
 
   if (!details) {
     console.error("Book details section not found.");
     return;
   }
 
-  details.innerHTML = `
-    <h2>${book.title}</h2>
-    <p>By ${book.author || "Unknown Author"}</p>
-    <p>Genre: ${book.genre || "Unspecified"}</p>
-    <p>${book.description || "No description available."}</p>
-    <button onclick="openBook('${book.id}')">Read Book</button>
-    <button onclick="showSection('discover')">Back to Discover</button>
-  `;
+  details.replaceChildren();
+
+  const title = document.createElement("h2");
+  title.textContent = book.title;
+
+  const author = document.createElement("p");
+  author.textContent = "By " + (book.author || "Unknown Author");
+
+  const genre = document.createElement("p");
+  genre.textContent = "Genre: " + (book.genre || "Unspecified");
+
+  const method = document.createElement("p");
+  method.textContent =
+    "Publishing method: " +
+    (book.publishing_method === "serial"
+      ? "Chapter-by-Chapter"
+      : "Complete Book");
+
+  const description = document.createElement("p");
+  description.textContent =
+    book.description || "No description available.";
+
+  const readButton = document.createElement("button");
+  readButton.textContent =
+    book.publishing_method === "serial"
+      ? "Read Chapters"
+      : "Read Book";
+
+  readButton.onclick = () => openBook(book.id);
+
+  const backButton = document.createElement("button");
+  backButton.textContent = "Back to Discover";
+  backButton.onclick = () => showSection("discover");
+
+  details.append(
+    title,
+    author,
+    genre,
+    method,
+    description,
+    readButton,
+    backButton
+  );
 
   showSection("bookDetails");
 }
