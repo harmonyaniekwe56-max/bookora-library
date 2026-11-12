@@ -1844,7 +1844,9 @@ async function updateWriterMilestones() {
     console.error("Achievement loading error:", loadError.message);
     return;
   }
-
+const earnedKeys = new Set(
+  (savedAchievements || []).map(item => item.achievement_key)
+);
 document.getElementById("submittedBookCount").textContent =
   (books || []).length;
 
@@ -1864,7 +1866,6 @@ document.getElementById("earnedAchievementCount").textContent =
 // BOOKORA CHAPTER-BY-CHAPTER PUBLISHING
 // ======================================
 
-// 1. LOAD THE AUTHOR'S APPROVED BOOKS
 
 // 1. LOAD THE AUTHOR'S APPROVED BOOKS
 async function loadChapterBooks() {
