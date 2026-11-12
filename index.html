@@ -1856,13 +1856,41 @@ document.getElementById("earnedAchievementCount").textContent =
 // ======================================
 
 // 1. LOAD THE AUTHOR'S APPROVED BOOKS
-const { data, error } = await supa
-  .from("books")
-  .select("id, title, publishing_method")
-  .eq("author_id", currentUser.id)
-  .eq("status", "approved")
-  .eq("publishing_method", "serial")
-  .order("created_at", { ascending: false });
+
+// 1. LOAD THE AUTHOR'S APPROVED BOOKS
+async function loadChapterBooks() {
+  const select = document.getElementById("chapterBookSelect");
+
+  select.replaceChildren();
+
+  const option = document.createElement("option");
+  option.value = "";
+  option.textContent = "Select a book";
+  select.append(option);
+
+  if (!supa || !currentUser) return;
+
+  const { data, error } = await supa
+    .from("books")
+    .select("id, title, publishing_method")
+    .eq("author_id", currentUser.id)
+    .eq("status", "approved")
+    .eq("publishing_method", "serial")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Book loading error:", error.message);
+    return;
+  }
+
+  (data || []).forEach(book => {
+    const item = document.createElement("option");
+    item.value = book.id;
+    item.textContent = book.title;
+    select.append(item);
+  });
+}
+
 // 2. LOAD CHAPTERS
 async function loadChapters() {
   const bookId = document.getElementById("chapterBookSelect").value;
