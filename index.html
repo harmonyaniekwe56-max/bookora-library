@@ -1770,7 +1770,7 @@ data.forEach(chapter => {
 async function publishChapter(chapterId) {
   if (!supa || !currentUser) {
     alert("Please log in first.");
-    return;
+    return; 
   }
 
   const confirmed = confirm("Are you sure you want to publish this chapter?");
