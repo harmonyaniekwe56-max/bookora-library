@@ -549,11 +549,20 @@ let books = [...samples];
 }
 let currentUser = null;
 // BOOKORA ONLINE DATABASE CONNECTION TEST
-async function testBookoraDatabase() {
-  if (!supa) {
-    console.error("Bookora database is not connected.");
-    return;
-  }
+unction setLocal(key,value) {
+  localStorage.setItem(key,JSON.stringify(value));
+}
+
+function saveChapterDraftLocally() {
+  const draft = {
+    number: document.getElementById("chapterNumber").value,
+    title: document.getElementById("chapterTitle").value,
+    content: document.getElementById("chapterContent").value,
+    bookId: document.getElementById("chapterBookSelect").value
+  };
+
+  setLocal("bookora-writing-draft", draft);
+}
 
   const { data, error } = await supa
     .from("books")
