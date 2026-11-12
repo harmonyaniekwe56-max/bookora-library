@@ -1929,6 +1929,7 @@ async function loadChapters() {
 
 
 // 3. SAVE A NEW CHAPTER OR UPDATE AN EXISTING ONE 
+
 async function saveChapter(status) {
   const bookId = document.getElementById("chapterBookSelect").value;
   const number = Number(document.getElementById("chapterNumber").value);
@@ -1964,49 +1965,50 @@ async function saveChapter(status) {
 
   message.textContent = "Saving chapter...";
 
-  let result;
+  try {
+    let result;
 
-  if (editingId) {
-    result = await supa
-      .from("book_chapters")
-      .update({
-        chapter_number: number,
-        title: title,
-        content: content,
-        status: status,
-        updated_at: new Date().toISOString()
-      })
-      .eq("id", editingId)
-      .eq("book_id", bookId)
-      .eq("author_id", currentUser.id);
-  } else {
-    result = await supa
-      .from("book_chapters")
-      .insert({
-        book_id: bookId,
-        author_id: currentUser.id,
-        chapter_number: number,
-        title: title,
-        content: content,
-        status: status
-      });
+    if (editingId) {
+      result = await supa
+        .from("book_chapters")
+        .update({
+          chapter_number: number,
+          title,
+          content,
+          status,
+          updated_at: new Date().toISOString()
+        })
+        .eq("id", editingId)
+        .eq("book_id", bookId)
+        .eq("author_id", currentUser.id);
+    } else {
+      result = await supa
+        .from("book_chapters")
+        .insert({
+          book_id: bookId,
+          author_id: currentUser.id,
+          chapter_number: number,
+          title,
+          content,
+          status
+        });
+    }
+
+    if (result.error) throw result.error;
+
+    message.textContent =
+      status === "published"
+        ? "Chapter published successfully!"
+        : "Chapter saved as a draft!";
+
+    clearChapterForm();
+    await loadChapters();
+
+  } catch (error) {
+    console.error("Chapter saving error:", error);
+    message.textContent = "Could not save chapter: " + error.message;
   }
-
-  if (result.error) {
-    console.error("Chapter saving error:", result.error.message);
-    message.textContent = "Could not save chapter: " + result.error.message;
-    return;
-  }
-
-  message.textContent =
-    status === "published"
-      ? "Chapter published successfully!"
-      : "Chapter saved as a draft!";
-
-  clearChapterForm();
-  await loadChapters();
 }
-
 
 // 4. EDIT AN EXISTING CHAPTER
 async function editChapter(chapterId) {
