@@ -1690,6 +1690,46 @@ document.getElementById("earnedAchievementCount").textContent =
       <p>${earnedKeys.has(item.key) ? "🏆" : "🔒"} ${item.name}</p>
     `).join("");
 }
+
+// ======================================
+// BOOKORA CHAPTER-BY-CHAPTER PUBLISHING
+// ======================================
+
+// 1. LOAD THE AUTHOR'S APPROVED BOOKS
+async function loadChapterBooks() {
+  const select = document.getElementById("chapterBookSelect");
+
+  select.replaceChildren();
+
+  const option = document.createElement("option");
+  option.value = "";
+  option.textContent = "Select a book";
+  select.append(option);
+
+  if (!supa || !currentUser) return;
+
+  const { data, error } = await supa
+    .from("books")
+    .select("id, title")
+    .eq("author_id", currentUser.id)
+    .eq("status", "approved")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Book loading error:", error.message);
+    return;
+  }
+
+  (data || []).forEach(book => {
+    const item = document.createElement("option");
+    item.value = book.id;
+    item.textContent = book.title;
+    select.append(item);
+  });
+}
+
+
+// 2. LOAD CHAPTERS
 async function loadChapters() {
   const bookId = document.getElementById("chapterBookSelect").value;
   const list = document.getElementById("chapterList");
@@ -1697,7 +1737,12 @@ async function loadChapters() {
   list.replaceChildren();
 
   if (!bookId) {
-    list.textContent = "Choose a book to list its chapters.";
+    list.textContent = "Choose a book to see its chapters.";
+    return;
+  }
+
+  if (!supa || !currentUser) {
+    list.textContent = "Please log in first.";
     return;
   }
 
@@ -1728,114 +1773,35 @@ async function loadChapters() {
       " (" + chapter.status + ")";
 
     item.append(heading);
-data.forEach(chapter => {
-  const item = document.createElement("div");
 
-  const heading = document.createElement("p");
-  heading.textContent =
-    "Chapter " + chapter.chapter_number +
-    ": " + chapter.title +
-    " (" + chapter.status + ")";
+    const editButton = document.createElement("button");
+    editButton.type = "button";
+    editButton.textContent = "Edit Chapter";
+    editButton.onclick = () => editChapter(chapter.id);
 
-  item.append(heading);
+    item.append(editButton);
 
-  const editButton = document.createElement("button");
-  editButton.textContent = "Edit Chapter";
-  editButton.type = "button";
-  editButton.onclick = () => editChapter(chapter.id);
+    if (chapter.status === "draft") {
+      const publishButton = document.createElement("button");
+      publishButton.type = "button";
+      publishButton.textContent = "Publish Chapter";
+      publishButton.onclick = () => publishChapter(chapter.id);
 
-  item.append(editButton);
-
-  if (chapter.status === "draft") {
-    const publishButton = document.createElement("button");
-    publishButton.textContent = "Publish Draft";
-    publishButton.type = "button";
-    publishButton.onclick = () => publishChapter(chapter.id);
-
-    item.append(publishButton);
-  }
-
-  list.append(item);
-});
-      button.textContent = "Publish Draft";
-      button.type = "button";
-      button.onclick = () => publishChapter(chapter.id);
-
-      item.append(button);
+      item.append(publishButton);
     }
 
     list.append(item);
   });
 }
-async function publishChapter(chapterId) {
-  if (!supa || !currentUser) {
-    alert("Please log in first.");
-    return; 
-  }
 
-  const confirmed = confirm("Are you sure you want to publish this chapter?");
 
-  if (!confirmed) return;
-
-const editingId = document.getElementById("editingChapterId").value;
-
-let result;
-
-if (editingId) {
-  result = await supa
-    .from("book_chapters")
-    .update({
-      chapter_number: chapterNumber,
-      title: title,
-      content: content,
-      status: status,
-      updated_at: new Date().toISOString()
-    })
-    .eq("id", editingId)
-    .eq("author_id", currentUser.id);
-} else {
-  result = await supa
-    .from("book_chapters")
-    .insert({
-      book_id: bookId,
-      author_id: currentUser.id,
-      chapter_number: chapterNumber,
-      title: title,
-      content: content,
-      status: status
-    });
-}
-
-const { error } = result;
-async function editChapter(chapterId) {
-  const { data, error } = await supa
-    .from("book_chapters")
-    .select("id, chapter_number, title, content")
-    .eq("id", chapterId)
-    .eq("author_id", currentUser.id)
-    .single();
-
-  if (error) {
-    console.error("Chapter editing error:", error.message);
-    alert("Could not load chapter for editing.");
-    return;
-  }
-
-  document.getElementById("editingChapterId").value = data.id;
-  document.getElementById("chapterNumber").value = data.chapter_number;
-  document.getElementById("chapterTitle").value = data.title;
-  document.getElementById("chapterContent").value = data.content;
-
-  document.getElementById("chapterMessage").textContent =
-    "Editing Chapter " + data.chapter_number;
-}
+// 3. SAVE A NEW CHAPTER OR UPDATE AN EXISTING ONE
 async function saveChapter(status) {
   const bookId = document.getElementById("chapterBookSelect").value;
-  const chapterNumber = Number(
-    document.getElementById("chapterNumber").value
-  );
+  const number = Number(document.getElementById("chapterNumber").value);
   const title = document.getElementById("chapterTitle").value.trim();
   const content = document.getElementById("chapterContent").value.trim();
+  const editingId = document.getElementById("editingChapterId").value;
   const message = document.getElementById("chapterMessage");
 
   if (!supa || !currentUser) {
@@ -1848,7 +1814,7 @@ async function saveChapter(status) {
     return;
   }
 
-  if (!Number.isInteger(chapterNumber) || chapterNumber < 1) {
+  if (!Number.isInteger(number) || number < 1) {
     message.textContent = "Enter a valid chapter number.";
     return;
   }
@@ -1858,22 +1824,44 @@ async function saveChapter(status) {
     return;
   }
 
+  if (status !== "draft" && status !== "published") {
+    message.textContent = "Invalid chapter status.";
+    return;
+  }
+
   message.textContent = "Saving chapter...";
 
-  const { error } = await supa
-    .from("book_chapters")
-    .insert({
-      book_id: bookId,
-      author_id: currentUser.id,
-      chapter_number: chapterNumber,
-      title: title,
-      content: content,
-      status: status
-    });
+  let result;
 
-  if (error) {
-    console.error("Chapter saving error:", error.message);
-    message.textContent = "Could not save chapter: " + error.message;
+  if (editingId) {
+    result = await supa
+      .from("book_chapters")
+      .update({
+        chapter_number: number,
+        title: title,
+        content: content,
+        status: status,
+        updated_at: new Date().toISOString()
+      })
+      .eq("id", editingId)
+      .eq("book_id", bookId)
+      .eq("author_id", currentUser.id);
+  } else {
+    result = await supa
+      .from("book_chapters")
+      .insert({
+        book_id: bookId,
+        author_id: currentUser.id,
+        chapter_number: number,
+        title: title,
+        content: content,
+        status: status
+      });
+  }
+
+  if (result.error) {
+    console.error("Chapter saving error:", result.error.message);
+    message.textContent = "Could not save chapter: " + result.error.message;
     return;
   }
 
@@ -1881,13 +1869,84 @@ async function saveChapter(status) {
     status === "published"
       ? "Chapter published successfully!"
       : "Chapter saved as a draft!";
+
+  clearChapterForm();
+  await loadChapters();
+}
+
+
+// 4. EDIT AN EXISTING CHAPTER
+async function editChapter(chapterId) {
+  if (!supa || !currentUser) return;
+
+  const { data, error } = await supa
+    .from("book_chapters")
+    .select("id, book_id, chapter_number, title, content")
+    .eq("id", chapterId)
+    .eq("author_id", currentUser.id)
+    .single();
+
+  if (error) {
+    console.error("Chapter editing error:", error.message);
+    alert("Could not load chapter.");
+    return;
+  }
+
+  document.getElementById("chapterBookSelect").value = data.book_id;
+  document.getElementById("editingChapterId").value = data.id;
+  document.getElementById("chapterNumber").value = data.chapter_number;
+  document.getElementById("chapterTitle").value = data.title;
+  document.getElementById("chapterContent").value = data.content;
+
+  document.getElementById("chapterMessage").textContent =
+    "Editing Chapter " + data.chapter_number;
+}
+
+
+// 5. PUBLISH A SAVED DRAFT
+async function publishChapter(chapterId) {
+  if (!supa || !currentUser) return;
+
+  if (!confirm("Are you sure you want to publish this chapter?")) return;
+
+  const { error } = await supa
+    .from("book_chapters")
+    .update({
+      status: "published",
+      updated_at: new Date().toISOString()
+    })
+    .eq("id", chapterId)
+    .eq("author_id", currentUser.id);
+
+  if (error) {
+    console.error("Chapter publishing error:", error.message);
+    alert("Could not publish chapter: " + error.message);
+    return;
+  }
+
+  alert("Chapter published successfully!");
+  await loadChapters();
+}
+
+
+// 6. CLEAR THE WRITING FORM
+function clearChapterForm() {
   document.getElementById("editingChapterId").value = "";
   document.getElementById("chapterNumber").value = "";
   document.getElementById("chapterTitle").value = "";
   document.getElementById("chapterContent").value = "";
-
-  await loadChapters();
 }
+
+
+// 7. CANCEL EDITING
+function cancelChapterEdit() {
+  clearChapterForm();
+
+  document.getElementById("chapterMessage").textContent =
+    "Editing cancelled. You can start a new chapter.";
+
+}
+
 </script>
 </body>
 </html>
