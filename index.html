@@ -1556,32 +1556,18 @@ async function readSharedBookById(bookId) {
     return;
   }
 
-  showSection("readerSection");
-  await readSharedBook(data);
-}
-
-async function readSharedBookById(bookId) {
-  const { data, error } = await supa
-    .from("books")
-    .select("*")
-    .eq("id", bookId)
-    .single();
-
-  if (error || !data) {
-    console.error("Could not find book:", error);
-    alert("Could not find this book.");
-    return;
-  }
-
   activeReaderBookId = String(data.id);
+
   document.getElementById("readerTitle").textContent = data.title;
 
-  loadReaderActivity();
-
   showSection("readerSection");
-  await readSharedBook(data);
-}
 
+  await readSharedBook(data);
+
+  await loadReaderChapters(data.id);
+
+  await loadReaderActivity();
+}
 if (supa) {
   supa.auth.onAuthStateChange((_event, session) => {
     currentUser = session?.user || null;
