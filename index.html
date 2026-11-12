@@ -1102,6 +1102,26 @@ function closeReader() {
 
   showSection("discover");
 }
+
+// SHOW OR HIDE THE MANUSCRIPT UPLOAD FIELD
+function updatePublishingMethodFields() {
+  const method = document.getElementById("publishingMethod").value;
+  const fileInput = document.getElementById("bookFile");
+  const fileGroup = document.getElementById("bookFileGroup");
+
+  const isComplete = method === "complete";
+
+  fileGroup.classList.toggle("hidden", !isComplete);
+  fileInput.required = isComplete;
+}
+
+document.getElementById("publishingMethod")
+  .addEventListener("change", updatePublishingMethodFields);
+
+updatePublishingMethodFields();
+
+
+// SUBMIT A BOOK
 document.getElementById("bookForm").addEventListener("submit", async event => {
   event.preventDefault();
 
@@ -1113,54 +1133,77 @@ document.getElementById("bookForm").addEventListener("submit", async event => {
     return;
   }
 
-  const file = document.getElementById("bookFile").files[0];
+  const publishingMethod =
+    document.getElementById("publishingMethod").value;
+
+  const file = publishingMethod === "complete"
+    ? document.getElementById("bookFile").files[0]
+    : null;
+
   const cover = document.getElementById("bookCover").files[0];
 
   const title = document.getElementById("bookTitle").value.trim();
   const penName = document.getElementById("penName").value.trim();
   const genre = document.getElementById("bookGenre").value;
-  const description = document.getElementById("bookDescription").value.trim();
+  const description =
+    document.getElementById("bookDescription").value.trim();
 
-  if (!file) {
+  // A complete book must have a manuscript file.
+  if (publishingMethod === "complete" && !file) {
     message.textContent = "Choose a book file.";
     return;
   }
 
-  if (file.size > 10 * 1024 * 1024) {
-    message.textContent = "Book files must be 10 MB or smaller.";
-    return;
+  // Validate the manuscript if one is provided.
+  if (file) {
+    if (file.size > 10 * 1024 * 1024) {
+      message.textContent = "Book files must be 10 MB or smaller.";
+      return;
+    }
+
+    const extension = file.name.split(".").pop().toLowerCase();
+
+    if (!["pdf", "txt", "epub"].includes(extension)) {
+      message.textContent = "Choose a PDF, TXT or EPUB file.";
+      return;
+    }
   }
 
-  const extension = file.name.split(".").pop().toLowerCase();
-
-  if (!["pdf", "txt", "epub"].includes(extension)) {
-    message.textContent = "Choose a PDF, TXT or EPUB file.";
-    return;
-  }
-
+  // Validate the optional cover.
   if (cover && (
     !["image/jpeg", "image/png", "image/webp"].includes(cover.type) ||
     cover.size > 2 * 1024 * 1024
   )) {
-    message.textContent = "Cover must be JPG, PNG or WEBP and no larger than 2 MB.";
+    message.textContent =
+      "Cover must be JPG, PNG or WEBP and no larger than 2 MB.";
     return;
   }
 
   const userId = currentUser.id;
   const uniqueId = crypto.randomUUID();
 
-  const filePath = `${userId}/${uniqueId}.${extension}`;
+  let filePath = null;
+  let fileName = null;
   let coverPath = null;
 
-  message.textContent = "Uploading your book...";
+  message.textContent = "Uploading your submission...";
 
   try {
-    const { error: uploadError } = await supa.storage
-      .from("book-files")
-      .upload(filePath, file);
+    // Upload the manuscript only for complete books.
+    if (file) {
+      const extension = file.name.split(".").pop().toLowerCase();
 
-    if (uploadError) throw uploadError;
+      filePath = `${userId}/${uniqueId}.${extension}`;
+      fileName = file.name;
 
+      const { error: uploadError } = await supa.storage
+        .from("book-files")
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+    }
+
+    // Upload the cover if the author selected one.
     if (cover) {
       const coverExtension = cover.name.split(".").pop().toLowerCase();
       coverPath = `${userId}/${uniqueId}.${coverExtension}`;
@@ -1172,31 +1215,38 @@ document.getElementById("bookForm").addEventListener("submit", async event => {
       if (coverError) throw coverError;
     }
 
+    // Save the book details in Supabase.
     const { error: databaseError } = await supa
-  .from("books")
-  .insert({
-    author_id: userId,
-    title,
-    author: penName,
-    genre,
-    description,
-    file_name: file.name,
-    file_path: filePath,
-    cover_path: coverPath,
-    status: "pending"
-  });
+      .from("books")
+      .insert({
+        author_id: userId,
+        title,
+        author: penName,
+        genre,
+        description,
+        publishing_method: publishingMethod,
+        file_name: fileName,
+        file_path: filePath,
+        cover_path: coverPath,
+        status: "pending"
+      });
 
     if (databaseError) throw databaseError;
 
-    message.textContent = "Your book has been submitted for review!";
+    message.textContent =
+      publishingMethod === "complete"
+        ? "Your complete book has been submitted for review!"
+        : "Your chapter-by-chapter book has been submitted for review!";
 
     document.getElementById("bookForm").reset();
+    updatePublishingMethodFields();
 
   } catch (error) {
     console.error("Bookora submission error:", error);
     message.textContent = "Submission failed: " + error.message;
   }
 });
+
 let activeReaderBookId = null;
 
 
