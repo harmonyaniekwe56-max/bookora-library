@@ -822,49 +822,75 @@ function fillGenres() {
     '<option value="">Choose a genre</option>'+options
   );
 }
+
 function makeBookCard(book) {
-  const card=document.createElement("article");
-  card.className="book";
-  const cover=document.createElement("div");
-  cover.className="cover";
-  if(book.cover_url) {
-    const img=document.createElement("img");
-    img.src=book.cover_url;
-    img.alt="Cover of "+book.title;
+  const card = document.createElement("article");
+  card.className = "book";
+
+  const cover = document.createElement("div");
+  cover.className = "cover";
+
+  if (book.cover_url) {
+    const img = document.createElement("img");
+    img.src = book.cover_url;
+    img.alt = "Cover of " + book.title;
     cover.append(img);
   } else {
-    cover.textContent="📖 "+book.title;
+    cover.textContent = "📖 " + book.title;
   }
-  const body=document.createElement("div");
-  body.className="bookbody";
-  const title=document.createElement("h3");
-  title.textContent=book.title;
-  const author=document.createElement("div");
-  author.className="muted";
-  author.textContent="By "+(book.pen_name||"Unknown author");
-  const genre=document.createElement("span");
-  genre.className="tag";
-  genre.textContent=book.genre||"Uncategorised";
-  const desc=document.createElement("p");
-  desc.textContent=book.description||"";
-  const actions=document.createElement("div");
-  actions.className="actions";
-  const save=document.createElement("button");
-  save.className="secondary";
-  save.textContent="Add to Shelf";
-  save.onclick=()=>saveBook(book.id);
-  const fav=document.createElement("button");
-  fav.className="secondary";
-  fav.textContent="♡ Favourite";
-  fav.onclick=()=>toggleFavourite(book.id);
-  const read=document.createElement("button");
-  read.textContent="Read Details";
+
+  const body = document.createElement("div");
+  body.className = "bookbody";
+
+  const title = document.createElement("h3");
+  title.textContent = book.title;
+
+  const author = document.createElement("div");
+  author.className = "muted";
+  author.textContent =
+    "By " + (book.pen_name || book.author || "Unknown author");
+
+  const genre = document.createElement("span");
+  genre.className = "tag";
+  genre.textContent = book.genre || "Uncategorised";
+
+  // Publishing method label
+  const method = document.createElement("span");
+  method.className = "tag";
+
+  method.textContent =
+    book.publishing_method === "serial"
+      ? "Chapter-by-Chapter"
+      : "Complete Book";
+
+  const desc = document.createElement("p");
+  desc.textContent = book.description || "";
+
+  const actions = document.createElement("div");
+  actions.className = "actions";
+
+  const save = document.createElement("button");
+  save.className = "secondary";
+  save.textContent = "Add to Shelf";
+  save.onclick = () => saveBook(book.id);
+
+  const fav = document.createElement("button");
+  fav.className = "secondary";
+  fav.textContent = "♡ Favourite";
+  fav.onclick = () => toggleFavourite(book.id);
+
+  const read = document.createElement("button");
+  read.textContent = "Read Details";
   read.onclick = () => showBookDetails(book);
-  actions.append(save,fav,read);
-  body.append(title,author,genre,desc,actions);
-  card.append(cover,body);
+
+  actions.append(save, fav, read);
+
+  body.append(title, author, genre, method, desc, actions);
+  card.append(cover, body);
+
   return card;
 }
+
 function renderBooks() {
   const grid=document.getElementById("bookGrid");
   grid.replaceChildren();
