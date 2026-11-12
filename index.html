@@ -2176,6 +2176,19 @@ function updateReaderChapterButtons() {
   document.getElementById("nextChapterBtn").disabled =
     currentReaderChapterIndex === readerChapters.length - 1;
 }
+
+const chapterContentInput = document.getElementById("chapterContent");
+
+chapterContentInput.addEventListener("input", () => {
+  const text = chapterContentInput.value.trim();
+
+  const wordCount = text
+    ? text.split(/\s+/).length
+    : 0;
+
+  document.getElementById("chapterWordCount").textContent =
+    "Words: " + wordCount;
+});
 </script>
 </body>
 </html>
