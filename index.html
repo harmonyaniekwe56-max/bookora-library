@@ -1705,7 +1705,14 @@ async function readSharedBookById(bookId) {
 
   await readSharedBook(data);
 
+  if (data.publishing_method === "serial") {
   await loadReaderChapters(data.id);
+} else {
+  document.getElementById("readerChapterList").textContent =
+    "This book is published as a complete book.";
+
+  document.getElementById("chapterReadingArea").classList.add("hidden");
+}
 
   await loadReaderActivity();
 }
