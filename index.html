@@ -1026,7 +1026,7 @@ loadReaderActivity();
 
 async function readSharedBook(book) {
   const {data,error}=await supa.storage
-    .from("bookora-files")
+    .from("book-files")
     .createSignedUrl(book.file_path,3600);
 
   if(error) {
