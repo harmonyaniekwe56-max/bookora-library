@@ -1049,44 +1049,52 @@ loadReaderActivity();
 }
 
 async function readSharedBook(book) {
-  const {data,error}=await supa.storage
-    .from("book-files")
-    .createSignedUrl(book.file_path,3600);
+  const area = document.getElementById("readerContent");
+  area.replaceChildren();
 
-  if(error) {
-    document.getElementById("readerContent").textContent=
-      "Could not open book: "+error.message;
+  // Handle chapter-by-chapter books
+  if (book.publishing_method === "serial" || !book.file_path) {
+    area.textContent =
+      "This story is published chapter by chapter. Choose a published chapter below to start reading.";
     return;
   }
 
-  const url=data.signedUrl;
-  const area=document.getElementById("readerContent");
-  area.replaceChildren();
+  const { data, error } = await supa.storage
+    .from("book-files")
+    .createSignedUrl(book.file_path, 3600);
 
-  const name=(book.file_name||"").toLowerCase();
+  if (error) {
+    area.textContent = "Could not open book: " + error.message;
+    return;
+  }
 
-  if(name.endsWith(".pdf")) {
-    const frame=document.createElement("iframe");
-    frame.src=url;
-    frame.title="PDF reader";
+  const url = data.signedUrl;
+  const name = (book.file_name || "").toLowerCase();
+
+  if (name.endsWith(".pdf")) {
+    const frame = document.createElement("iframe");
+    frame.src = url;
+    frame.title = "PDF reader";
     area.append(frame);
-  } else if(name.endsWith(".txt")) {
-    const pre=document.createElement("pre");
-    const response=await fetch(url);
 
-    if(!response.ok) {
-      area.textContent="Could not load this text file.";
+  } else if (name.endsWith(".txt")) {
+    const pre = document.createElement("pre");
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      area.textContent = "Could not load this text file.";
       return;
     }
 
-    pre.textContent=await response.text();
+    pre.textContent = await response.text();
     area.append(pre);
+
   } else {
-    const link=document.createElement("a");
-    link.href=url;
-    link.textContent="Open or download EPUB";
-    link.target="_blank";
-    link.rel="noopener";
+    const link = document.createElement("a");
+    link.href = url;
+    link.textContent = "Open or download EPUB";
+    link.target = "_blank";
+    link.rel = "noopener";
     area.append(link);
   }
 }
