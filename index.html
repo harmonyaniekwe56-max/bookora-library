@@ -1085,31 +1085,35 @@ function renderShelf() {
 }
 
 function openBook(id) {
-  const book=books.find(b=>String(b.id)===String(id));
-  if(!book) return;
-  activeReaderBookId = String(book.id);
-loadReaderActivity();
+  const book = books.find(b => String(b.id) === String(id));
 
-  document.getElementById("readerTitle").textContent=book.title;
+  if (!book) return;
 
-  const area=document.getElementById("readerContent");
-  area.replaceChildren();
-
-  const p=document.createElement("p");
-  p.textContent=book.description||"No description provided.";
-  area.append(p);
-
-  const note=document.createElement("p");
-  note.textContent=book.demo
-    ? "This is a demonstration catalogue entry. No full book file is attached."
-    : "This book has been published in the shared library.";
-  area.append(note);
-
-  if(supa && !book.demo && book.file_path) {
-    readSharedBook(book);
+  // Open real books from Supabase
+  if (supa && !book.demo) {
+    readSharedBookById(book.id);
+    return;
   }
 
+  // Handle demonstration books
+  activeReaderBookId = String(book.id);
+
+  document.getElementById("readerTitle").textContent = book.title;
+
+  const area = document.getElementById("readerContent");
+  area.replaceChildren();
+
+  const p = document.createElement("p");
+  p.textContent = book.description || "No description provided.";
+  area.append(p);
+
+  const note = document.createElement("p");
+  note.textContent =
+    "This is a demonstration catalogue entry. No full book file is attached.";
+  area.append(note);
+
   showSection("readerSection");
+  loadReaderActivity();
 }
 
 async function readSharedBook(book) {
