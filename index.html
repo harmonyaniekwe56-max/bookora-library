@@ -1812,7 +1812,7 @@ async function updateWriterMilestones() {
     if (saveError) {
       console.error("Achievement saving error:", saveError.message);
     }
-  }
+  
 
   const { data: savedAchievements, error: loadError } = await supa
     .from("author_achievements")
