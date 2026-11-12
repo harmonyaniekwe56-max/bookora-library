@@ -1104,6 +1104,7 @@ function closeReader() {
 }
 
 // SHOW OR HIDE THE MANUSCRIPT UPLOAD FIELD
+
 function updatePublishingMethodFields() {
   const method = document.getElementById("publishingMethod").value;
   const fileInput = document.getElementById("bookFile");
@@ -1121,7 +1122,6 @@ document.getElementById("publishingMethod")
 updatePublishingMethodFields();
 
 
-// SUBMIT A BOOK
 document.getElementById("bookForm").addEventListener("submit", async event => {
   event.preventDefault();
 
@@ -1133,43 +1133,34 @@ document.getElementById("bookForm").addEventListener("submit", async event => {
     return;
   }
 
-  const publishingMethod =
-    document.getElementById("publishingMethod").value;
-
-  const file = publishingMethod === "complete"
-    ? document.getElementById("bookFile").files[0]
-    : null;
-
+  const file = document.getElementById("bookFile").files[0];
   const cover = document.getElementById("bookCover").files[0];
 
   const title = document.getElementById("bookTitle").value.trim();
   const penName = document.getElementById("penName").value.trim();
   const genre = document.getElementById("bookGenre").value;
-  const description =
-    document.getElementById("bookDescription").value.trim();
+  const description = document.getElementById("bookDescription").value.trim();
+  const publishingMethod = document.getElementById("publishingMethod").value;
 
-  // A complete book must have a manuscript file.
   if (publishingMethod === "complete" && !file) {
-    message.textContent = "Choose a book file.";
+    message.textContent = "Choose your complete book file.";
     return;
   }
 
-  // Validate the manuscript if one is provided.
-  if (file) {
-    if (file.size > 10 * 1024 * 1024) {
-      message.textContent = "Book files must be 10 MB or smaller.";
-      return;
-    }
-
-    const extension = file.name.split(".").pop().toLowerCase();
-
-    if (!["pdf", "txt", "epub"].includes(extension)) {
-      message.textContent = "Choose a PDF, TXT or EPUB file.";
-      return;
-    }
+  if (file && file.size > 10 * 1024 * 1024) {
+    message.textContent = "Book files must be 10 MB or smaller.";
+    return;
   }
 
-  // Validate the optional cover.
+  const extension = file
+    ? file.name.split(".").pop().toLowerCase()
+    : null;
+
+  if (file && !["pdf", "txt", "epub"].includes(extension)) {
+    message.textContent = "Choose a PDF, TXT or EPUB file.";
+    return;
+  }
+
   if (cover && (
     !["image/jpeg", "image/png", "image/webp"].includes(cover.type) ||
     cover.size > 2 * 1024 * 1024
@@ -1183,18 +1174,13 @@ document.getElementById("bookForm").addEventListener("submit", async event => {
   const uniqueId = crypto.randomUUID();
 
   let filePath = null;
-  let fileName = null;
   let coverPath = null;
 
-  message.textContent = "Uploading your submission...";
-
   try {
-    // Upload the manuscript only for complete books.
-    if (file) {
-      const extension = file.name.split(".").pop().toLowerCase();
+    message.textContent = "Submitting your book...";
 
+    if (file) {
       filePath = `${userId}/${uniqueId}.${extension}`;
-      fileName = file.name;
 
       const { error: uploadError } = await supa.storage
         .from("book-files")
@@ -1203,7 +1189,6 @@ document.getElementById("bookForm").addEventListener("submit", async event => {
       if (uploadError) throw uploadError;
     }
 
-    // Upload the cover if the author selected one.
     if (cover) {
       const coverExtension = cover.name.split(".").pop().toLowerCase();
       coverPath = `${userId}/${uniqueId}.${coverExtension}`;
@@ -1215,7 +1200,6 @@ document.getElementById("bookForm").addEventListener("submit", async event => {
       if (coverError) throw coverError;
     }
 
-    // Save the book details in Supabase.
     const { error: databaseError } = await supa
       .from("books")
       .insert({
@@ -1225,7 +1209,7 @@ document.getElementById("bookForm").addEventListener("submit", async event => {
         genre,
         description,
         publishing_method: publishingMethod,
-        file_name: fileName,
+        file_name: file ? file.name : null,
         file_path: filePath,
         cover_path: coverPath,
         status: "pending"
@@ -1248,7 +1232,6 @@ document.getElementById("bookForm").addEventListener("submit", async event => {
 });
 
 let activeReaderBookId = null;
-
 
 async function loadReaderActivity() {
   if (!activeReaderBookId) return;
