@@ -967,37 +967,6 @@ async function loadApprovedBooks() {
     renderBooks();
   }
 }
-async function loadChapterBooks() {
-  const select = document.getElementById("chapterBookSelect");
-
-  select.replaceChildren();
-
-  const firstOption = document.createElement("option");
-  firstOption.value = "";
-  firstOption.textContent = "Select a book";
-  select.append(firstOption);
-
-  if (!supa || !currentUser) return;
-
-  const { data, error } = await supa
-    .from("books")
-    .select("id, title")
-    .eq("author_id", currentUser.id)
-    .eq("status", "approved")
-    .order("created_at", { ascending: false });
-
-  if (error) {
-    console.error("Chapter books loading error:", error.message);
-    return;
-  }
-
-  (data || []).forEach(book => {
-    const option = document.createElement("option");
-    option.value = book.id;
-    option.textContent = book.title;
-    select.append(option);
-  });
-}
 function saveBook(id) {
   let ids=getLocal("bookora-shelf");
 
