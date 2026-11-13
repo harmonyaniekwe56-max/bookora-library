@@ -405,15 +405,16 @@ main {
   <label for="chapterTitle">Chapter title</label>
   <input id="chapterTitle" maxlength="150" required>
 
-  <label for="chapterContent">Chapter content</label>
-  <textarea
-    <p id="chapterWordCount">Words: 0</p>
-    id="chapterContent"
-    rows="12"
-    placeholder="Write your chapter here..."
-    required
-  ></textarea>
+<label for="chapterContent">Chapter content</label>
 
+<p id="chapterWordCount">Words: 0</p>
+
+<textarea
+  id="chapterContent"
+  rows="12"
+  placeholder="Write your chapter here..."
+  required
+></textarea>
   <button type="button" onclick="saveChapter('draft')">
     Save Draft
   </button>
