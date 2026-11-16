@@ -24,7 +24,19 @@
 body{margin:0;background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif}
 body.dark{--bg:#17121f;--panel:#241b30;--ink:#f5effb;--muted:#c1b4cf;--line:#443451;--soft:#332540}
 header{background:linear-gradient(120deg,#382052,#7950a8);color:white;padding:20px 5%;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
-.brand{font:700 30px 'Playfair Display',serif}
+.brand{
+  font:700 30px 'Playfair Display',serif;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.brand img{
+  width:45px;
+  height:45px;
+  object-fit:contain;
+  border-radius:50%;
+}
 .brand span{color:#e8d7ff}
 nav{display:flex;gap:8px;flex-wrap:wrap}
 nav button{border:1px solid #ffffff50;background:#ffffff14;color:white;border-radius:20px;padding:9px 13px;cursor:pointer}
