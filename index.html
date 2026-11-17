@@ -989,6 +989,9 @@ async function loadApprovedBooks() {
     renderBooks();
   }
 }
+async function loadSharedBooks() {
+  await loadApprovedBooks();
+}
 function saveBook(id) {
   let ids=getLocal("bookora-shelf");
 
